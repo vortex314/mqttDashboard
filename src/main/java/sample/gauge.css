@@ -1,0 +1,5 @@
+.gauge {
+    BRIGHT_COLOR   : rgb(220, 220, 220);
+
+    -tickmark-color: BRIGHT_COLOR;
+}
