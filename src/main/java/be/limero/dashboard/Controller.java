@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
@@ -18,6 +19,7 @@ import org.json.JSONTokener;
 import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rx.Observer;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -40,42 +42,24 @@ public class Controller implements Initializable, MqttCallback {
     public Label servoRunning;
 
 
-
-    ValuePublisher<Boolean> mqttIsConnected=new ValuePublisher<Boolean>();
+    ValuePublisher<Boolean> mqttIsConnected = new ValuePublisher<Boolean>();
 
     private static final Logger log
             = LoggerFactory.getLogger(Controller.class);
 
     MqttClient mqttClient;
     MqttConnectOptions mqttConnectOptions;
-    HashMap<String, Subscriber<?>> topicSubscriber = new HashMap<String, Subscriber<?>>();
+    HashMap<String, Observer<MqttMessage>> topicObserver = new HashMap<String, Observer<MqttMessage>>();
 
     void scanChildren(Pane parent) {
         ObservableList<Node> children = parent.getChildren();
         for (Node node : children) {
             if (node instanceof Pane) {
-                scanChildren((Pane) node);
-            } else if (node instanceof VBox) {
-                scanChildren((VBox) node);
-            } else if (node.getUserData()!=null) {
-                String userData = (String)node.getUserData();
-                String[] flows = userData.split("--");
-                if ( flows.length > 1 ) {
-                    String observable= flows[0];
-                    String subscriber= flows[1];
-                    if ( subscriber.compareTo("RedGreen")==0) {
-                        log.info("RedGreen on "+observable);
-                        topicSubscriber.put(observable,new RedGreen(node));
-                    } else if ( subscriber.compareTo("SetValue")==0) {
-                        log.info("Gauge on "+observable);
-                        topicSubscriber.put(observable,new SetValue((Gauge)node));
-                    } else if ( subscriber.compareTo("SetText")==0) {
-                        log.info("Gauge on "+observable);
-                        topicSubscriber.put(observable,new SetText((Label)node));
-                    }
-                } else {
-                    log.warn(" flow too short : "+userData);
-                }
+                if (node instanceof MqttPane) {
+                    MqttPane mqttPane = (MqttPane) node;
+                    topicObserver.put(mqttPane.getTopic(), mqttPane);
+                } else
+                    scanChildren((Pane) node);
             }
         }
     }
@@ -85,7 +69,6 @@ public class Controller implements Initializable, MqttCallback {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         log.info("Controller started " + url + "  " + resourceBundle);
         scanChildren(anchorPane);
-        mqttIsConnected.subscribe((Subscriber<Boolean>)topicSubscriber.get("mqttConnected"));
         mqttConnect();
         Long time = System.currentTimeMillis();
 
@@ -108,7 +91,7 @@ public class Controller implements Initializable, MqttCallback {
             mqttIsConnected.set(true);
         } catch (Exception ex) {
             log.warn("failed ", ex);
-           mqttIsConnected.set(false);
+            mqttIsConnected.set(false);
         }
     }
 
@@ -125,37 +108,9 @@ public class Controller implements Initializable, MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
         String message = new String(mqttMessage.getPayload());
-        Subscriber<?> subscriber = topicSubscriber.get(topic);
-        if (subscriber == null) return;
-        Object json = new JSONTokener(message).nextValue();
-        if (json instanceof Boolean) {
-            ((Subscriber<Boolean>) subscriber).onNext((Boolean) json);
-        } else if (json instanceof Double) {
-            ((Subscriber<Double>) subscriber).onNext((Double) json);
-        } else if (json instanceof Integer) {
-            ((Subscriber<Double>) subscriber).onNext(new Double((Integer) json));
-        }  else if (json instanceof String) {
-            ((Subscriber<String>) subscriber).onNext((String) json);
-        } else {
-            log.info(" unhandled type "+json.getClass());
-        }
-
-        if (topic.startsWith("src/drive/motor")) {
-            //log.info(" MQTT RCV " + topic + ":" + message);
-        } else return;
-        if (topic.compareTo(motorRpmTarget.getUserData().toString()) == 0) {
-            Platform.runLater(() -> {
-                motorRpmTarget.setValue(Double.parseDouble(message));
-            });
-        }
-        if (topic.compareTo(motorRpmMeasured.getUserData().toString()) == 0)
-            Platform.runLater(() -> {
-                motorRpmMeasured.setValue(Double.parseDouble(message));
-            });
-        if (topic.compareTo(motorCurrent.getUserData().toString()) == 0)
-            Platform.runLater(() -> {
-                motorCurrent.setValue(Double.parseDouble(message));
-            });
+        Observer<MqttMessage> observer = topicObserver.get(topic);
+        if (observer != null)
+            observer.onNext(mqttMessage);
     }
 
     @Override
