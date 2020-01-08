@@ -11,62 +11,97 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import java.lang.String?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="603.0" prefWidth="742.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.limero.dashboard.Controller">
-         <children>
-            <GridPane layoutX="-1.0" layoutY="8.0" prefHeight="587.0" prefWidth="747.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="306.0" minWidth="10.0" prefWidth="306.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="68.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints />
-            <ColumnConstraints />
-            <ColumnConstraints />
-            <ColumnConstraints />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints maxHeight="349.0" minHeight="10.0" prefHeight="165.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="242.0" minHeight="0.0" prefHeight="28.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="358.0" minHeight="10.0" prefHeight="187.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="205.0" minHeight="10.0" prefHeight="26.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="178.0" minHeight="10.0" prefHeight="178.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-                  <Gauge fx:id="motorRpmTarget" maxValue="120.0" minValue="-120.0" minorTickSpace="5.0" prefHeight="165.0" prefWidth="167.0" title="rpm target" unit="RPM" userData="src/drive/motor/rpmTarget--SetValue" />
-                  <Gauge fx:id="motorRpmMeasured" maxValue="120.0" minValue="-120.0" minorTickSpace="5.0" prefHeight="200.0" prefWidth="200.0" title="rpm measured" unit="RPM" userData="src/drive/motor/rpmMeasured--SetValue" GridPane.columnIndex="1" />
-                  <Gauge fx:id="motorCurrent" alert="true" alertMessage="ALERT !!!" averageVisible="true" averagingEnabled="true" majorTickSpace="1.0" maxValue="5.0" minorTickSpace="0.1" prefHeight="200.0" prefWidth="200.0" title="current" unit="A" userData="src/drive/motor/current--SetValue" GridPane.columnIndex="2" />
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="3">
-                     <children>
-                        <Label fx:id="mqttConnected" alignment="CENTER" prefHeight="16.0" prefWidth="102.0" text="MQTT" userData="mqttConnected--RedGreen" />
-                  <CheckBox mnemonicParsing="false" text="CheckBox" />
-                         <Label fx:id="motorAlive" alignment="CENTER" contentDisplay="CENTER" prefHeight="16.0" prefWidth="109.0" text="Connected" textAlignment="CENTER" userData="src/drive/system/alive--RedGreen" />
-                        <Label fx:id="motorRunning" alignment="CENTER" contentDisplay="CENTER" prefHeight="16.0" prefWidth="104.0" text="MOTOR" userData="src/drive/motor/running--RedGreen" />
-                     <Label fx:id="servoRunning" alignment="CENTER" contentDisplay="CENTER" prefHeight="16.0" prefWidth="104.0" text="SERVO" userData="src/drive/servo/running--RedGreen" />
-                         <MqttPane topic="src/ESP82-10027/system/alive" GridPane.rowIndex="4">
-                             <children>
-                                 <Label prefHeight="16.0" prefWidth="104.0" text="ESP82-10027" />
-                             </children>
-                         </MqttPane>
-                     </children>
-                  </VBox>
-               <Gauge fx:id="servoAngleTarget" angleRange="180.0" averageVisible="true" averagingEnabled="true" maxValue="90.0" minMeasuredValue="-45.0" minValue="-90.0" minorTickSpace="5.0" prefHeight="200.0" prefWidth="200.0" startAngle="270.0" threshold="45.0" title="angle target" unit="Degrees" userData="src/drive/servo/angleTarget--SetValue" GridPane.rowIndex="2" />
-               <Gauge fx:id="servoAngleMeasured" angleRange="180.0" averageVisible="true" averagingEnabled="true" maxValue="90.0" minValue="-90.0" minorTickSpace="5.0" prefHeight="200.0" prefWidth="200.0" startAngle="270.0" title="angle measured" unit="Degrees" userData="src/drive/servo/angleMeasured--SetValue" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-               <Gauge fx:id="servoCurrent" alert="true" alertMessage="ALERT !!!" majorTickSpace="1.0" maxValue="5.0" minorTickSpace="0.1" prefHeight="200.0" prefWidth="200.0" title="current" unit="A" userData="src/drive/servo/current--SetValue" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                   <Slider fx:id="rpmTargetSlider" max="120.0" min="-120.0" onMouseReleased="#onMouseReleased" GridPane.rowIndex="1" />
-                   <Button fx:id="connectButton" mnemonicParsing="false" onAction="#connect" prefHeight="26.0" prefWidth="119.0" text="Connect" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                  <Slider fx:id="angleTargetSlider" max="120.0" min="-120.0" onMouseReleased="#onMouseReleased" userData="GetValue--dst/drive/servo/angleTarget" GridPane.rowIndex="3" />
-                  <Label fx:id="servoMessage" prefHeight="25.0" prefWidth="409.0" text="Servo message" userData="src/drive/servo/message--SetText" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                  <Label fx:id="motorMessage" prefHeight="25.0" prefWidth="409.0" text="Motor message" userData="src/drive/motor/message--SetText" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Label alignment="CENTER" prefHeight="16.0" prefWidth="191.0" text="MOTOR" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label alignment="CENTER" prefHeight="16.0" prefWidth="188.0" text="SERVO" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <MqttPane topic="src/ESP82-10027/system/counter" GridPane.rowIndex="4">
-               <children>
-                  <Gauge prefHeight="191.0" prefWidth="308.0" />
-               </children>
-            </MqttPane>
-               </children>
-            </GridPane>
-         </children>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.ToggleGroup?>
+
+<AnchorPane fx:id="anchorPane" prefHeight="603.0" prefWidth="742.0" xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.limero.dashboard.Controller">
+    <fx:define>
+        <String fx:id="url" fx:value="tcp://test.mosquitto.org:1883"/>
+    </fx:define>
+    <children>
+        <GridPane layoutX="-1.0" layoutY="8.0" prefHeight="587.0" prefWidth="747.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="306.0" minWidth="10.0" prefWidth="306.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="68.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints/>
+                <ColumnConstraints/>
+                <ColumnConstraints/>
+                <ColumnConstraints/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="349.0" minHeight="10.0" prefHeight="165.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="242.0" minHeight="0.0" prefHeight="28.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="358.0" minHeight="10.0" prefHeight="187.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="205.0" minHeight="10.0" prefHeight="26.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="178.0" minHeight="10.0" prefHeight="178.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <Gauge fx:id="motorRpmTarget" maxValue="120.0" minValue="-120.0" minorTickSpace="5.0" title="rpm target"
+                       unit="RPM" id="" userData="src/drive/motor/rpmTarget--SetValue"/>
+                <Gauge fx:id="motorRpmMeasured" maxValue="120.0" minValue="-120.0" minorTickSpace="5.0"
+                       prefHeight="200.0" prefWidth="200.0" title="rpm measured" unit="RPM"
+                       userData="src/drive/motor/rpmMeasured--SetValue" GridPane.columnIndex="1"/>
+                <Gauge fx:id="motorCurrent" alert="true" alertMessage="ALERT !!!" averageVisible="true"
+                       averagingEnabled="true" majorTickSpace="1.0" maxValue="5.0" minorTickSpace="0.1"
+                       prefHeight="200.0" prefWidth="200.0" title="current" unit="A"
+                       userData="src/drive/motor/current--SetValue" GridPane.columnIndex="2"/>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="3">
+                    <children>
+                        <Label fx:id="mqttConnected" alignment="CENTER" prefHeight="16.0" prefWidth="102.0" text="MQTT"
+                               userData="mqttConnected--RedGreen"/>
+                        <CheckBox mnemonicParsing="false" text="CheckBox"/>
+                        <Label fx:id="motorAlive" alignment="CENTER" contentDisplay="CENTER" prefHeight="16.0"
+                               prefWidth="109.0" text="Connected" textAlignment="CENTER"
+                               userData="src/drive/system/alive--RedGreen"/>
+                        <Label fx:id="motorRunning" alignment="CENTER" contentDisplay="CENTER" prefHeight="16.0"
+                               prefWidth="104.0" text="MOTOR" userData="src/drive/motor/running--RedGreen"/>
+                        <Label fx:id="servoRunning" alignment="CENTER" contentDisplay="CENTER" prefHeight="16.0"
+                               prefWidth="104.0" text="SERVO" userData="src/drive/servo/running--RedGreen"/>
+                        <MqttPane topic="src/ESP82-10027/system/alive" GridPane.rowIndex="4">
+                            <children>
+                                <Label prefHeight="16.0" prefWidth="104.0" text="ESP82-10027"/>
+                            </children>
+                        </MqttPane>
+                    </children>
+                </VBox>
+                <Gauge fx:id="servoAngleTarget" angleRange="180.0" averageVisible="true" averagingEnabled="true"
+                       maxValue="90.0" minMeasuredValue="-45.0" minValue="-90.0" minorTickSpace="5.0" prefHeight="200.0"
+                       prefWidth="200.0" startAngle="270.0" threshold="45.0" title="angle target" unit="Degrees"
+                       userData="src/drive/servo/angleTarget--SetValue" GridPane.rowIndex="2"/>
+                <Gauge fx:id="servoAngleMeasured" angleRange="180.0" averageVisible="true" averagingEnabled="true"
+                       maxValue="90.0" minValue="-90.0" minorTickSpace="5.0" prefHeight="200.0" prefWidth="200.0"
+                       startAngle="270.0" title="angle measured" unit="Degrees"
+                       userData="src/drive/servo/angleMeasured--SetValue" GridPane.columnIndex="1"
+                       GridPane.rowIndex="2"/>
+                <Gauge fx:id="servoCurrent" alert="true" alertMessage="ALERT !!!" majorTickSpace="1.0" maxValue="5.0"
+                       minorTickSpace="0.1" prefHeight="200.0" prefWidth="200.0" title="current" unit="A"
+                       userData="src/drive/servo/current--SetValue" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                <Slider fx:id="rpmTargetSlider" max="120.0" min="-120.0" onMouseReleased="#onMouseReleased"
+                        GridPane.rowIndex="1"/>
+                <Button fx:id="connectButton" mnemonicParsing="false" onAction="#connect" prefHeight="26.0"
+                        prefWidth="119.0" text="Connect" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                <Slider fx:id="angleTargetSlider" max="120.0" min="-120.0" onMouseReleased="#onMouseReleased"
+                        userData="GetValue--dst/drive/servo/angleTarget" GridPane.rowIndex="3"/>
+                <Label fx:id="servoMessage" prefHeight="25.0" prefWidth="409.0" text="Servo message"
+                       userData="src/drive/servo/message--SetText" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+                <Label fx:id="motorMessage" prefHeight="25.0" prefWidth="409.0" text="Motor message"
+                       userData="src/drive/motor/message--SetText" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                <Label alignment="CENTER" prefHeight="16.0" prefWidth="191.0" text="MOTOR" GridPane.columnIndex="1"
+                       GridPane.rowIndex="1"/>
+                <Label alignment="CENTER" prefHeight="16.0" prefWidth="188.0" text="SERVO" GridPane.columnIndex="1"
+                       GridPane.rowIndex="3"/>
+                <MqttPane topic="src/ESP82-10027/system/counter" GridPane.rowIndex="4">
+                    <children>
+                        <Gauge prefHeight="191.0" prefWidth="308.0"/>
+                    </children>
+                </MqttPane>
+            </children>
+        </GridPane>
+    </children>
 
 </AnchorPane>

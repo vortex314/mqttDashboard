@@ -40,6 +40,7 @@ public class Controller implements Initializable, MqttCallback {
     public Gauge servoAngleMeasured;
     public Gauge servoCurrent;
     public Label servoRunning;
+    public String url="tcp://test.mosquitto.org";
 
 
     ValuePublisher<Boolean> mqttIsConnected = new ValuePublisher<Boolean>();
@@ -78,8 +79,8 @@ public class Controller implements Initializable, MqttCallback {
     void mqttConnect() {
         try {
             log.info("mqtt connecting...");
-            String tmpDir = System.getProperty("java.io.tmpdir");
-            MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence(tmpDir);
+     /*       String tmpDir = System.getProperty("java.io.tmpdir");
+            MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence(tmpDir);*/
             mqttConnectOptions = new MqttConnectOptions();
             mqttConnectOptions.setCleanSession(true);
             mqttConnectOptions.setAutomaticReconnect(true);
