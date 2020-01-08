@@ -1,20 +1,27 @@
-package sample;
+package be.limero.dashboard;
 
 import eu.hansolo.medusa.Gauge;
+import lombok.Getter;
+import lombok.Setter;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sample.MqttTopic;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import static be.limero.dashboard.Util.now;
 
-public class MqttGauge extends Gauge implements MqttTopic, Subscriber<Double> {
-    String topic="NO_TOPIC";
+public class MqttGauge extends Gauge implements MqttProperty, Subscriber<Double> {
+    @Setter @Getter String topic;
+    @Setter @Getter Boolean retained;
+    @Setter @Getter Integer qos;
+    @Setter @Getter Integer disableTimeout=Integer.MAX_VALUE;
+    @Setter @Getter Mqtt mqtt;
+
     Long setTime;
-    Integer timeout=Integer.MAX_VALUE;;
     Timer timer=new Timer(true);
     private static final Logger log
             = LoggerFactory.getLogger(MqttGauge.class);
@@ -24,21 +31,9 @@ public class MqttGauge extends Gauge implements MqttTopic, Subscriber<Double> {
         setTime=now();
     }
 
-    @Override
-    public String getTopic() {
-        return topic;
-    }
 
-    @Override
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
-    public Integer getTimeout() {
-        return timeout;
-    }
     public void setTimeout(Integer timeout) {
-        this.timeout = timeout;
+        this.disableTimeout = timeout;
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -52,7 +47,7 @@ public class MqttGauge extends Gauge implements MqttTopic, Subscriber<Double> {
     }
 
     Boolean timedout() {
-        return  (now()-setTime) > timeout;
+        return  (now()-setTime) > disableTimeout;
     }
 
     @Override

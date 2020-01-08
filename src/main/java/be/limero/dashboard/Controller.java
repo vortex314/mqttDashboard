@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 
-public class Controller implements Initializable, MqttCallback {
+public class Controller implements Initializable {
     public AnchorPane anchorPane;
     public Gauge motorRpmTarget;
     public Gauge motorRpmMeasured;
@@ -40,7 +40,7 @@ public class Controller implements Initializable, MqttCallback {
     public Gauge servoAngleMeasured;
     public Gauge servoCurrent;
     public Label servoRunning;
-    public String url="tcp://test.mosquitto.org";
+    public String url = "tcp://test.mosquitto.org";
 
 
     ValuePublisher<Boolean> mqttIsConnected = new ValuePublisher<Boolean>();
@@ -48,19 +48,16 @@ public class Controller implements Initializable, MqttCallback {
     private static final Logger log
             = LoggerFactory.getLogger(Controller.class);
 
-    MqttClient mqttClient;
-    MqttConnectOptions mqttConnectOptions;
+    Mqtt mqtt=new Mqtt();
     HashMap<String, Observer<MqttMessage>> topicObserver = new HashMap<String, Observer<MqttMessage>>();
 
     void scanChildren(Pane parent) {
         ObservableList<Node> children = parent.getChildren();
         for (Node node : children) {
-            if (node instanceof Pane) {
-                if (node instanceof MqttPane) {
-                    MqttPane mqttPane = (MqttPane) node;
-                    topicObserver.put(mqttPane.getTopic(), mqttPane);
-                } else
-                    scanChildren((Pane) node);
+            if (node instanceof MqttProperty) {
+                ((MqttProperty) node).setMqtt(mqtt);
+            } else if (node instanceof Pane) {
+                scanChildren((Pane) node);
             }
         }
     }
@@ -70,7 +67,7 @@ public class Controller implements Initializable, MqttCallback {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         log.info("Controller started " + url + "  " + resourceBundle);
         scanChildren(anchorPane);
-        mqttConnect();
+        mqtt.connect();
         Long time = System.currentTimeMillis();
 
     }
@@ -79,15 +76,8 @@ public class Controller implements Initializable, MqttCallback {
     void mqttConnect() {
         try {
             log.info("mqtt connecting...");
-     /*       String tmpDir = System.getProperty("java.io.tmpdir");
-            MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence(tmpDir);*/
-            mqttConnectOptions = new MqttConnectOptions();
-            mqttConnectOptions.setCleanSession(true);
-            mqttConnectOptions.setAutomaticReconnect(true);
-            mqttClient = new MqttClient("tcp://limero.ddns.net:1883", "Paho" + System.nanoTime());
-            mqttClient.setCallback(this);
-            mqttClient.connect();
-            mqttClient.subscribe("src/#", 0);
+            mqtt.connect();
+            mqtt.subscribe("src/#", 0);
             log.info("mqtt connected.");
             mqttIsConnected.set(true);
         } catch (Exception ex) {
@@ -96,39 +86,4 @@ public class Controller implements Initializable, MqttCallback {
         }
     }
 
-    public void connect(ActionEvent actionEvent) {
-        mqttConnect();
-    }
-
-    @Override
-    public void connectionLost(Throwable throwable) {
-        log.warn("MQTT connection lost ");
-    }
-
-
-    @Override
-    public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-        String message = new String(mqttMessage.getPayload());
-        Observer<MqttMessage> observer = topicObserver.get(topic);
-        if (observer != null)
-            observer.onNext(mqttMessage);
-    }
-
-    @Override
-    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
-    }
-
-    public void onMouseReleased(MouseEvent mouseEvent) {
-        Slider sl = (Slider) mouseEvent.getSource();
-        Double d = sl.getValue();
-        Integer i = d.intValue();
-        try {
-            String topic = "dst/drive/motor/rpmTarget";
-            mqttClient.publish(topic, new MqttMessage(i.toString().getBytes()));
-            log.info("MQTT TXD " + topic + ":" + i);
-        } catch (Exception ex) {
-            log.warn("MQTT publish failed ");
-        }
-    }
 }

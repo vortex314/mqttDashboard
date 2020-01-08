@@ -14,7 +14,7 @@ public class Dashboard extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Dashboard.fxml"));
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("MqttDashboard.fxml"));
         primaryStage.setTitle("MQTT Dashboard");
         primaryStage.setScene(new Scene(root, 700, 300));
         primaryStage.show();
