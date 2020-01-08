@@ -1,6 +1,7 @@
 package be.limero.dashboard;
 
 import eu.hansolo.medusa.Gauge;
+import javafx.fxml.Initializable;
 import lombok.Getter;
 import lombok.Setter;
 import org.reactivestreams.Subscriber;
@@ -9,12 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sample.MqttTopic;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import static be.limero.dashboard.Util.now;
 
-public class MqttGauge extends Gauge implements MqttProperty, Subscriber<Double> {
+public class MqttGauge extends Gauge implements MqttProperty, Subscriber<Double>, Initializable {
     @Setter @Getter String topic;
     @Setter @Getter Boolean retained;
     @Setter @Getter Integer qos;
@@ -31,20 +34,10 @@ public class MqttGauge extends Gauge implements MqttProperty, Subscriber<Double>
         setTime=now();
     }
 
-
-    public void setTimeout(Integer timeout) {
-        this.disableTimeout = timeout;
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if ( (timedout())) {
-                    log.info(getTopic()+" delta : "+((now()-setTime)+" > "+timeout));
-                    if (timedout()) setStyle("-fx-background-color: #FF0000;");
-                    else setStyle("-fx-background-color: #00FF00;");
-                }
-            }
-        }, timeout, timeout);
+    @Override public String getUserAgentStylesheet() {
+        return Gauge.class.getResource("gauge.css").toExternalForm();
     }
+
 
     Boolean timedout() {
         return  (now()-setTime) > disableTimeout;
@@ -69,5 +62,19 @@ public class MqttGauge extends Gauge implements MqttProperty, Subscriber<Double>
     @Override
     public void onComplete() {
 
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        log.info(" init topic : "+topic+" disableTimeout "+disableTimeout);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if ( (timedout())) {
+                    if (timedout()) setDisable(true);
+                    else setDisable(false);
+                }
+            }
+        }, disableTimeout, disableTimeout);
     }
 }

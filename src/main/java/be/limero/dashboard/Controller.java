@@ -28,18 +28,6 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
     public AnchorPane anchorPane;
-    public Gauge motorRpmTarget;
-    public Gauge motorRpmMeasured;
-    public Gauge motorCurrent;
-    public Label mqttConnected;
-    public Label motorRunning;
-    public Label motorAlive;
-    public Label motorMessage;
-    public Slider rpmTargetSlider;
-    public Gauge servoAngleTarget;
-    public Gauge servoAngleMeasured;
-    public Gauge servoCurrent;
-    public Label servoRunning;
     public String url = "tcp://test.mosquitto.org";
 
 
@@ -56,12 +44,12 @@ public class Controller implements Initializable {
         for (Node node : children) {
             if (node instanceof MqttProperty) {
                 ((MqttProperty) node).setMqtt(mqtt);
+                if ( node instanceof Initializable ) ((Initializable)node).initialize(null,null);
             } else if (node instanceof Pane) {
                 scanChildren((Pane) node);
             }
         }
     }
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -69,7 +57,6 @@ public class Controller implements Initializable {
         scanChildren(anchorPane);
         mqtt.connect();
         Long time = System.currentTimeMillis();
-
     }
 
 

@@ -31,9 +31,8 @@ public class MqttRadioButton extends RadioButton implements MqttProperty, Initia
         this.setOnAction((actionEvent)->{mqtt.publish(topic, String.valueOf(this.isSelected()));});
     }
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        log.info(" initialized topic : "+topic+" disableTimeout "+disableTimeout);
     }
 }

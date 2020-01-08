@@ -51,6 +51,7 @@ public class Mqtt implements MqttCallback {
 
     void publish(String topic, String message) {
         try {
+            log.info(" PUBLISH "+topic+" : "+message);
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
             mqttMessage.setQos(0);
             mqttMessage.setRetained(false);
