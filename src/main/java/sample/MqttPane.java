@@ -1,18 +1,14 @@
-package be.limero.dashboard;
+package sample;
 
 import eu.hansolo.medusa.Gauge;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONTokener;
-import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observer;
@@ -57,8 +53,8 @@ public class MqttPane extends FlowPane implements Initializable, Observer<MqttMe
         Platform.runLater(() -> {
             if (n instanceof Gauge && o instanceof Double) ((Gauge) n).setValue((Double) o);
             if (n instanceof Gauge && o instanceof Integer) ((Gauge) n).setValue((Integer) o * 1.0);
-            if ( n instanceof Label && o instanceof Boolean ) {
-                if ((Boolean)o) n.setStyle("-fx-background-color: #00FF00;");
+            if (n instanceof Label && o instanceof Boolean) {
+                if ((Boolean) o) n.setStyle("-fx-background-color: #00FF00;");
                 else n.setStyle("-fx-background-color: #FF0000;");
             }
         });

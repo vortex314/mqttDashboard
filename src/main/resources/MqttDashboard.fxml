@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import be.limero.dashboard.*?>
-<?import eu.hansolo.medusa.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import be.limero.dashboard.MqttGauge?>
+<?import be.limero.dashboard.MqttLabel?>
+<?import be.limero.dashboard.MqttRadioButton?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
 
-<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.limero.dashboard.Controller">
-   <children>
-      <FlowPane layoutX="14.0" layoutY="14.0" prefHeight="81.0" prefWidth="111.0" vgap="10.0">
-         <children>
-            <MqttRadioButton mnemonicParsing="false" text="Power" topic="dst/pi3/gpio/29" />
-            <CheckBox mnemonicParsing="false" text="MOTOR" />
-            <CheckBox mnemonicParsing="false" text="SERVO" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-         </children>
-      </FlowPane>
-      <MqttGauge topic="srd/drive/motor/rpmTarget" disableTimeout="2000" layoutX="125.0" layoutY="7.0" prefHeight="200.0" prefWidth="200.0" />
-   </children>
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.limero.dashboard.Controller">
+    <children>
+        <FlowPane layoutX="14.0" layoutY="14.0" prefHeight="81.0" prefWidth="111.0" vgap="10.0">
+            <children>
+                <MqttRadioButton mnemonicParsing="false" text="Power" topic="dst/pi3/gpio/29" />
+                <CheckBox mnemonicParsing="false" text="MOTOR" />
+                <CheckBox mnemonicParsing="false" text="SERVO" />
+                <CheckBox mnemonicParsing="false" text="CheckBox" />
+            </children>
+        </FlowPane>
+        <MqttGauge disableTimeout="2000" layoutX="125.0" layoutY="7.0" prefHeight="200.0" prefWidth="200.0" topic="srd/drive/motor/rpmTarget" />
+        <MqttLabel layoutX="325.0" layoutY="7.0" prefHeight="28.0" prefWidth="200.0" topic="src/ESP82-10027/system/alive" />
+    </children>
 </AnchorPane>

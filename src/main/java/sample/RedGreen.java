@@ -1,4 +1,4 @@
-package be.limero.dashboard;
+package sample;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -6,7 +6,6 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sample.MqttBooleanLabel;
 
 import java.util.Timer;
 import java.util.TimerTask;

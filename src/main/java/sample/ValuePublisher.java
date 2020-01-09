@@ -1,4 +1,4 @@
-package be.limero.dashboard;
+package sample;
 
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;

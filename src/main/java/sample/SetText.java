@@ -1,7 +1,7 @@
-package be.limero.dashboard;
+package sample;
 
-import eu.hansolo.medusa.Gauge;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
@@ -12,16 +12,16 @@ import java.util.TimerTask;
 
 import static be.limero.dashboard.Util.now;
 
-public class SetValue implements Subscriber<Double> {
-    Gauge node;
+public class SetText implements Subscriber<String> {
+    Label node;
     Integer timeout = 2000;
     Long setTime;
     Timer timer = new Timer(true);
 
     private static final Logger log
-            = LoggerFactory.getLogger(SetValue.class);
+            = LoggerFactory.getLogger(SetText.class);
 
-    public SetValue(Gauge node) {
+    public SetText(Label node) {
         this.node = node;
         setTime = now();
         setTimeout(timeout);
@@ -32,12 +32,12 @@ public class SetValue implements Subscriber<Double> {
     }
 
     @Override
-    public void onNext(Double d) {
+    public void onNext(String s) {
         setTime = now();
         Platform.runLater(() -> {
-            node.setStyle(null);
-            node.setDisable(false);
-                    node.setValue(d);
+                    node.setStyle(null);
+                    node.setDisable(false);
+                    node.setText(s);
                 }
         );
     }
@@ -53,7 +53,7 @@ public class SetValue implements Subscriber<Double> {
             public void run() {
                 if ((now() - setTime) > timeout) {
                     log.info(" delta : " + ((now() - setTime) + " > " + timeout));
- //                   node.setStyle("-fx-background-color: #FF0000;");
+                    //                   node.setStyle("-fx-background-color: #FF0000;");
                     node.setDisable(true);
                 }
             }

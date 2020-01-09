@@ -1,13 +1,10 @@
-package be.limero.dashboard;
+package sample;
 
 import akka.Done;
-import akka.NotUsed;
 import akka.actor.ActorSystem;
 import akka.japi.Pair;
 import akka.stream.ActorMaterializer;
-import akka.stream.ActorMaterializerSettings;
 import akka.stream.Materializer;
-import akka.stream.Supervision;
 import akka.stream.alpakka.mqtt.MqttConnectionSettings;
 import akka.stream.alpakka.mqtt.MqttMessage;
 import akka.stream.alpakka.mqtt.MqttQoS;
@@ -16,17 +13,13 @@ import akka.stream.alpakka.mqtt.javadsl.MqttSource;
 import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.Unit;
 
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.TimeUnit;
 
 public class SourceMqtt<T> {
     private static final Logger log
@@ -74,8 +67,8 @@ public class SourceMqtt<T> {
     Source<T, CompletionStage<Done>> source(String topic) {
         Source<MqttMessage, CompletionStage<Done>> mqttSource =
                 MqttSource.atMostOnce(
-                        connectionSettings.withClientId("source-test/source"), MqttSubscriptions.create(topic,MqttQoS.atMostOnce()), 1);
-        Source<T, CompletionStage<Done>> v = mqttSource.map(m -> m.topic() + "-" + m.payload().utf8String()).map(str ->(T) new JSONTokener(str).nextValue());
+                        connectionSettings.withClientId("source-test/source"), MqttSubscriptions.create(topic, MqttQoS.atMostOnce()), 1);
+        Source<T, CompletionStage<Done>> v = mqttSource.map(m -> m.topic() + "-" + m.payload().utf8String()).map(str -> (T) new JSONTokener(str).nextValue());
         return v;
     }
 }

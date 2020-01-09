@@ -1,14 +1,17 @@
 package be.limero.dashboard;
 
+
 import eu.hansolo.medusa.Gauge;
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import lombok.Getter;
 import lombok.Setter;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sample.MqttTopic;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,21 +20,24 @@ import java.util.TimerTask;
 
 import static be.limero.dashboard.Util.now;
 
-public class MqttGauge extends Gauge implements MqttProperty<Double>, Initializable {
-    @Setter @Getter String topic;
+public class MqttLabel extends Label implements MqttProperty<Object>, Initializable {
+    @Setter
+    @Getter
+    String topic;
     @Setter @Getter Boolean retained;
     @Setter @Getter Integer qos;
-    @Setter @Getter Integer disableTimeout=Integer.MAX_VALUE;
+    @Setter @Getter Integer disableTimeout=2000;
     @Setter @Getter Mqtt mqtt;
 
     Long setTime;
     Timer timer=new Timer(true);
     private static final Logger log
-            = LoggerFactory.getLogger(MqttGauge.class);
+            = LoggerFactory.getLogger(MqttLabel.class);
 
-    public MqttGauge() {
-        super(SkinType.GAUGE);
+    public MqttLabel() {
+        super();
         setTime=now();
+        setText("waiting...");
     }
 
     @Override public String getUserAgentStylesheet() {
@@ -49,9 +55,9 @@ public class MqttGauge extends Gauge implements MqttProperty<Double>, Initializa
     }
 
     @Override
-    public void onNext(Double d) {
+    public void onNext(Object d) {
         setTime=now();
-       setValue(d);
+        Platform.runLater(()->setText(d.toString()));
     }
 
     @Override

@@ -1,8 +1,7 @@
-package be.limero.dashboard;
+package sample;
 
 import eu.hansolo.medusa.Gauge;
 import javafx.application.Platform;
-import javafx.scene.control.Label;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
@@ -13,16 +12,16 @@ import java.util.TimerTask;
 
 import static be.limero.dashboard.Util.now;
 
-public class SetText implements Subscriber<String> {
-    Label node;
+public class SetValue implements Subscriber<Double> {
+    Gauge node;
     Integer timeout = 2000;
     Long setTime;
     Timer timer = new Timer(true);
 
     private static final Logger log
-            = LoggerFactory.getLogger(SetText.class);
+            = LoggerFactory.getLogger(SetValue.class);
 
-    public SetText(Label node) {
+    public SetValue(Gauge node) {
         this.node = node;
         setTime = now();
         setTimeout(timeout);
@@ -33,12 +32,12 @@ public class SetText implements Subscriber<String> {
     }
 
     @Override
-    public void onNext(String s) {
+    public void onNext(Double d) {
         setTime = now();
         Platform.runLater(() -> {
                     node.setStyle(null);
                     node.setDisable(false);
-                    node.setText(s);
+                    node.setValue(d);
                 }
         );
     }

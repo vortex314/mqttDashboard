@@ -7,6 +7,8 @@ import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import org.eclipse.paho.client.mqttv3.*;
+import org.json.JSONTokener;
+import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observer;
@@ -21,7 +23,11 @@ public class Mqtt implements MqttCallback {
 
     MqttClient mqttClient;
     MqttConnectOptions mqttConnectOptions;
-    HashMap<String, Observer<MqttMessage>> topicObserver = new HashMap<String, Observer<MqttMessage>>();
+    HashMap<String, Subscriber<Object>> topicSubscribers = new HashMap<String, Subscriber<Object>>();
+
+    void register(MqttProperty mqttProperty){
+        topicSubscribers.put(mqttProperty.getTopic(),mqttProperty);
+    }
 
     void connect() {
         try {
@@ -51,7 +57,7 @@ public class Mqtt implements MqttCallback {
 
     void publish(String topic, String message) {
         try {
-            log.info(" PUBLISH "+topic+" : "+message);
+            log.info(" PUBLISH " + topic + " : " + message);
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
             mqttMessage.setQos(0);
             mqttMessage.setRetained(false);
@@ -61,9 +67,9 @@ public class Mqtt implements MqttCallback {
         }
     }
 
-    void subscribe(String topic,int qos){
+    void subscribe(String topic, int qos) {
         try {
-            mqttClient.subscribe(topic,qos);
+            mqttClient.subscribe(topic, qos);
         } catch (MqttException ex) {
             log.warn("subscribe issue ", ex);
         }
@@ -78,9 +84,10 @@ public class Mqtt implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
         String message = new String(mqttMessage.getPayload());
-        Observer<MqttMessage> observer = topicObserver.get(topic);
-        if (observer != null)
-            observer.onNext(mqttMessage);
+        Object json = new JSONTokener(message).nextValue();
+        Subscriber<Object> subscriber = topicSubscribers.get(topic);
+        if (subscriber != null)
+            subscriber.onNext(mqttMessage);
     }
 
     @Override

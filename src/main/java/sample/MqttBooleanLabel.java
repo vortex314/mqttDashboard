@@ -13,26 +13,26 @@ import java.util.TimerTask;
 import static be.limero.dashboard.Util.now;
 
 
-public class MqttBooleanLabel extends Label implements MqttTopic,Subscriber<Boolean> {
-    String topic="NO_TOPIC";
-    Integer timeout=Integer.MAX_VALUE;
+public class MqttBooleanLabel extends Label implements MqttTopic, Subscriber<Boolean> {
+    String topic = "NO_TOPIC";
+    Integer timeout = Integer.MAX_VALUE;
     Long setTime;
-    Timer timer=new Timer(true);
+    Timer timer = new Timer(true);
     private static final Logger log
             = LoggerFactory.getLogger(MqttBooleanLabel.class);
 
     public MqttBooleanLabel() {
         super();//don't forget our our parents!
-        setTime=now();
+        setTime = now();
     }
 
     Boolean timedout() {
-       return  (now()-setTime) > timeout;
+        return (now() - setTime) > timeout;
     }
 
     @Override
     public void onNext(Boolean bool) {
-        setTime=now();
+        setTime = now();
         Platform.runLater(() -> {
                     if (bool) setStyle("-fx-background-color: #00FF00;");
                     else setStyle("-fx-background-color: #FF0000;");
@@ -69,8 +69,8 @@ public class MqttBooleanLabel extends Label implements MqttTopic,Subscriber<Bool
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if ( (now()-setTime) > timeout ) {
-                    log.info(getTopic()+" delta : "+((now()-setTime)+" > "+timeout));
+                if ((now() - setTime) > timeout) {
+                    log.info(getTopic() + " delta : " + ((now() - setTime) + " > " + timeout));
                     onNext(false);
                 }
             }

@@ -1,25 +1,15 @@
 package be.limero.dashboard;
 
-import eu.hansolo.medusa.Gauge;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import org.eclipse.paho.client.mqttv3.*;
-import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
-import org.json.JSONTokener;
-import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observer;
+import sample.ValuePublisher;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -36,15 +26,18 @@ public class Controller implements Initializable {
     private static final Logger log
             = LoggerFactory.getLogger(Controller.class);
 
-    Mqtt mqtt=new Mqtt();
+    Mqtt mqtt = new Mqtt();
     HashMap<String, Observer<MqttMessage>> topicObserver = new HashMap<String, Observer<MqttMessage>>();
 
     void scanChildren(Pane parent) {
         ObservableList<Node> children = parent.getChildren();
         for (Node node : children) {
             if (node instanceof MqttProperty) {
-                ((MqttProperty) node).setMqtt(mqtt);
-                if ( node instanceof Initializable ) ((Initializable)node).initialize(null,null);
+                MqttProperty mqttProperty=(MqttProperty)node;
+                mqttProperty.setMqtt(mqtt);
+                mqtt.register(mqttProperty);
+                log.info(" "+node.getClass()+" : "+mqttProperty.getTopic());
+                if (node instanceof Initializable) ((Initializable) node).initialize(null, null);
             } else if (node instanceof Pane) {
                 scanChildren((Pane) node);
             }
