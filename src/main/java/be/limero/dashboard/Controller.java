@@ -9,7 +9,6 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observer;
-import sample.ValuePublisher;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -50,20 +49,6 @@ public class Controller implements Initializable {
         scanChildren(anchorPane);
         mqtt.connect();
         Long time = System.currentTimeMillis();
-    }
-
-
-    void mqttConnect() {
-        try {
-            log.info("mqtt connecting...");
-            mqtt.connect();
-            mqtt.subscribe("src/#", 0);
-            log.info("mqtt connected.");
-            mqttIsConnected.set(true);
-        } catch (Exception ex) {
-            log.warn("failed ", ex);
-            mqttIsConnected.set(false);
-        }
     }
 
 }

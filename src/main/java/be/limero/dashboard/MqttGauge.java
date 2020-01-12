@@ -66,7 +66,6 @@ public class MqttGauge extends Gauge implements MqttProperty<Double>, Initializa
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        log.info(" init topic : "+topic+" disableTimeout "+disableTimeout);
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {

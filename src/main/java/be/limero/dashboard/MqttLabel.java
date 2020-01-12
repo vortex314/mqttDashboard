@@ -5,6 +5,7 @@ import eu.hansolo.medusa.Gauge;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -21,9 +22,7 @@ import java.util.TimerTask;
 import static be.limero.dashboard.Util.now;
 
 public class MqttLabel extends Label implements MqttProperty<Object>, Initializable {
-    @Setter
-    @Getter
-    String topic;
+    @Setter @Getter String topic;
     @Setter @Getter Boolean retained;
     @Setter @Getter Integer qos;
     @Setter @Getter Integer disableTimeout=2000;
@@ -72,7 +71,6 @@ public class MqttLabel extends Label implements MqttProperty<Object>, Initializa
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        log.info(" init topic : "+topic+" disableTimeout "+disableTimeout);
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {

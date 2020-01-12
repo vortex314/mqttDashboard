@@ -17,16 +17,18 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
-public class Mqtt implements MqttCallback {
+public class Mqtt implements IMqttMessageListener {
     private static final Logger log
             = LoggerFactory.getLogger(Mqtt.class);
 
-    MqttClient mqttClient;
+    public ValuePublisher<Boolean> connected = new ValuePublisher<>();
+
+    MqttAsyncClient mqttClient;
     MqttConnectOptions mqttConnectOptions;
     HashMap<String, Subscriber<Object>> topicSubscribers = new HashMap<String, Subscriber<Object>>();
 
-    void register(MqttProperty mqttProperty){
-        topicSubscribers.put(mqttProperty.getTopic(),mqttProperty);
+    void register(MqttProperty mqttProperty) {
+        topicSubscribers.put(mqttProperty.getTopic(), mqttProperty);
     }
 
     void connect() {
@@ -37,13 +39,23 @@ public class Mqtt implements MqttCallback {
             mqttConnectOptions = new MqttConnectOptions();
             mqttConnectOptions.setCleanSession(true);
             mqttConnectOptions.setAutomaticReconnect(true);
-            mqttClient = new MqttClient("tcp://limero.ddns.net:1883", "Paho" + System.nanoTime());
-            mqttClient.setCallback(this);
-            mqttClient.connect();
-            mqttClient.subscribe("src/#", 0);
-            log.info("mqtt connected.");
+            mqttClient = new MqttAsyncClient("tcp://limero.ddns.net:1883", "Paho" + System.nanoTime());
+            mqttClient.connect(mqttConnectOptions, this, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                    subscribe("src/#", 0);
+                    connected.set(true);
+                    log.info("mqtt connected.");
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    log.warn("connection failed. ", throwable);
+                    connected.set(false);
+                }
+            });
         } catch (Exception ex) {
-            log.warn("failed ", ex);
+            log.warn("mqtt connect failed. ", ex);
         }
     }
 
@@ -69,17 +81,27 @@ public class Mqtt implements MqttCallback {
 
     void subscribe(String topic, int qos) {
         try {
-            mqttClient.subscribe(topic, qos);
+            mqttClient.subscribe(topic, qos, this, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken iMqttToken) {
+                    log.info("subscribed.");
+                }
+
+                @Override
+                public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                    log.warn("subscribe issue. ", throwable);
+                }
+            });
         } catch (MqttException ex) {
             log.warn("subscribe issue ", ex);
         }
     }
 
-    @Override
+    // @Override
     public void connectionLost(Throwable throwable) {
+        connected.set(false);
         log.warn("MQTT connection lost ");
     }
-
 
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
@@ -88,10 +110,5 @@ public class Mqtt implements MqttCallback {
         Subscriber<Object> subscriber = topicSubscribers.get(topic);
         if (subscriber != null)
             subscriber.onNext(mqttMessage);
-    }
-
-    @Override
-    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
     }
 }

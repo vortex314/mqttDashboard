@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.TilePane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TilePane prefHeight="387.0" prefWidth="600.0">
+         <children>
+            <Label text="" />
+            <Label text="+ 3.3 V" />
+            <Label text="+ 5 V" />
+            <Label text="" />
+
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="GPIO 2" />
+            <Label text="+ 5 V" />
+            <Label text="" />
+
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="GPIO 3" />
+            <Label text="GND" />
+            <Label text="" />
+
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="GPIO 4" />
+            <RadioButton mnemonicParsing="false" text="GPIO 14" />
+            <ChoiceBox prefWidth="150.0" />
+
+            <Label text="" />
+            <Label text="GND" />
+
+
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <ChoiceBox prefWidth="150.0" />
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <ChoiceBox prefWidth="150.0" />
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <ChoiceBox prefWidth="150.0" />
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <ChoiceBox prefWidth="150.0" />
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <ChoiceBox prefWidth="150.0" />
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <ChoiceBox prefWidth="150.0" />
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <ChoiceBox prefWidth="150.0" />
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <ChoiceBox prefWidth="150.0" />
+            <ChoiceBox prefWidth="150.0" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <RadioButton mnemonicParsing="false" text="RadioButton" />
+            <ChoiceBox prefWidth="150.0" />
+            <Label text="Label" />
+         </children>
+      </TilePane>
+   </children>
+</AnchorPane>
