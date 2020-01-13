@@ -41,15 +41,15 @@ public class MqttRadioButton extends RadioButton implements MqttProperty<Boolean
 
     public MqttRadioButton() {
         super();
-        lastUpdated = now();
-        this.setOnAction((actionEvent) -> {
-            mqtt.publish(dstTopic, String.valueOf(this.isSelected()));
-        });
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         log.info(" initialized topic : " + topic + " disableTimeout " + disableTimeout);
+        lastUpdated = now();
+        this.setOnAction((actionEvent) -> {
+            mqtt.publish(topic, String.valueOf(this.isSelected()));
+        });
     }
 
 

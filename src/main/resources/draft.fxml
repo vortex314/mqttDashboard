@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<?import be.limero.dashboard.MqttRadioButton topic="gpio/value"?>
+<?import be.limero.dashboard.MqttRadioButton?>
 <?import be.limero.dashboard.MqttChoiceBox?>
-<AnchorPane prefHeight="691.0" prefWidth="334.0" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.limero.dashboard.Controller">
+<AnchorPane fx:id="anchorPane" prefHeight="691.0" prefWidth="334.0" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.limero.dashboard.Controller">
     <children>
         <GridPane alignment="TOP_RIGHT" gridLinesVisible="true" hgap="3.0" prefHeight="691.0" prefWidth="375.0">
             <columnConstraints>
@@ -221,7 +221,7 @@
                     <String fx:value="PWM_OUTPUT" />
                 </ChoiceBox>
                 <MqttRadioButton topic="gpio/value" mnemonicParsing="false" prefHeight="32.0" prefWidth="90.0" style="-fx-background-color: orange;" text="GPIO 26" GridPane.columnIndex="1" GridPane.rowIndex="18" />
-                <MqttRadioButton topic="gpio/value" mnemonicParsing="false" prefHeight="34.0" prefWidth="86.0" style="-fx-background-color: orange;" text="GPIO 20" GridPane.columnIndex="2" GridPane.rowIndex="18" />
+                <MqttRadioButton topic="dst/pi3/gpio20/value" mnemonicParsing="false" prefHeight="34.0" prefWidth="86.0" style="-fx-background-color: orange;" text="GPIO 20" GridPane.columnIndex="2" GridPane.rowIndex="18" />
                 <ChoiceBox prefWidth="150.0" value="INPUT" GridPane.columnIndex="3" GridPane.rowIndex="18">
                     <String fx:value="INPUT" />
                     <String fx:value="OUTPUT" />
@@ -229,7 +229,7 @@
                 </ChoiceBox>
 
                 <Label alignment="CENTER" prefHeight="35.0" prefWidth="89.0" style="-fx-background-color: grey;" text="GND" GridPane.columnIndex="1" GridPane.rowIndex="19" />
-                <MqttRadioButton topic="gpio29/value" mnemonicParsing="false" prefHeight="36.0" prefWidth="88.0" style="-fx-background-color: orange;" text="GPIO 29" GridPane.columnIndex="2" GridPane.rowIndex="19" />
+                <MqttRadioButton topic="dst/pi3/gpio29/value" mnemonicParsing="false" prefHeight="36.0" prefWidth="88.0" style="-fx-background-color: orange;" text="GPIO 29" GridPane.columnIndex="2" GridPane.rowIndex="19" />
                 <MqttChoiceBox topic="gpio29/mode" prefWidth="150.0" value="INPUT" GridPane.columnIndex="3" GridPane.rowIndex="19">
                     <String fx:value="INPUT" />
                     <String fx:value="OUTPUT" />
