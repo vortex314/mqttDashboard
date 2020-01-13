@@ -25,7 +25,7 @@ public class Mqtt implements IMqttMessageListener {
 
     MqttAsyncClient mqttClient;
     MqttConnectOptions mqttConnectOptions;
-    HashMap<String, Subscriber<Object>> topicSubscribers = new HashMap<String, Subscriber<Object>>();
+    HashMap<String, MqttProperty<Object>> topicSubscribers = new HashMap<String, MqttProperty<Object>>();
 
     void register(MqttProperty mqttProperty) {
         topicSubscribers.put(mqttProperty.getTopic(), mqttProperty);
@@ -107,8 +107,8 @@ public class Mqtt implements IMqttMessageListener {
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
         String message = new String(mqttMessage.getPayload());
         Object json = new JSONTokener(message).nextValue();
-        Subscriber<Object> subscriber = topicSubscribers.get(topic);
+        MqttProperty<?> subscriber = topicSubscribers.get(topic);
         if (subscriber != null)
-            subscriber.onNext(mqttMessage);
+            subscriber.onNext(json);
     }
 }

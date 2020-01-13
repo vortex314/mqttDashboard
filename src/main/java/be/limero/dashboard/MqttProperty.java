@@ -1,9 +1,9 @@
 package be.limero.dashboard;
 
-import org.reactivestreams.Subscriber;
-import sun.awt.SubRegionShowable;
+public interface MqttProperty<T extends Object>  {
+    public static String srcPrefix="src/";
+    public static String dstPrefix="dst/";
 
-public interface MqttProperty<T> extends Subscriber<T> {
     void setTopic(String topic);
 
     String getTopic();
@@ -24,5 +24,8 @@ public interface MqttProperty<T> extends Subscriber<T> {
 
     Mqtt getMqtt();
 
+    void onNext(Object value);
 
 }
+
+

@@ -5,12 +5,8 @@ import eu.hansolo.medusa.Gauge;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,24 +45,9 @@ public class MqttLabel extends Label implements MqttProperty<Object>, Initializa
     }
 
     @Override
-    public void onSubscribe(Subscription subscription) {
-
-    }
-
-    @Override
     public void onNext(Object d) {
         setTime=now();
         Platform.runLater(()->setText(d.toString()));
-    }
-
-    @Override
-    public void onError(Throwable throwable) {
-
-    }
-
-    @Override
-    public void onComplete() {
-
     }
 
     @Override

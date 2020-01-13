@@ -1,10 +1,10 @@
 package be.limero.dashboard;
 
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.control.RadioButton;
 import lombok.Getter;
 import lombok.Setter;
-import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +18,9 @@ public class MqttRadioButton extends RadioButton implements MqttProperty<Boolean
     @Setter
     @Getter
     String topic;
+    @Setter
+    @Getter
+    String dstTopic="dst/lost-found/mqttRadioButton";
     @Setter
     @Getter
     Boolean retained;
@@ -40,7 +43,7 @@ public class MqttRadioButton extends RadioButton implements MqttProperty<Boolean
         super();
         lastUpdated = now();
         this.setOnAction((actionEvent) -> {
-            mqtt.publish(topic, String.valueOf(this.isSelected()));
+            mqtt.publish(dstTopic, String.valueOf(this.isSelected()));
         });
     }
 
@@ -49,23 +52,12 @@ public class MqttRadioButton extends RadioButton implements MqttProperty<Boolean
         log.info(" initialized topic : " + topic + " disableTimeout " + disableTimeout);
     }
 
-    @Override
-    public void onSubscribe(Subscription subscription) {
-
-    }
 
     @Override
-    public void onNext(Boolean aBoolean) {
-
+    public void onNext(Object aBoolean) {
+        Platform.runLater(()->{
+            this.setSelected((Boolean)aBoolean);
+        });
     }
 
-    @Override
-    public void onError(Throwable throwable) {
-
-    }
-
-    @Override
-    public void onComplete() {
-
-    }
 }

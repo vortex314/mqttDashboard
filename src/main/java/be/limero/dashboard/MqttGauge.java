@@ -4,11 +4,8 @@ import eu.hansolo.medusa.Gauge;
 import javafx.fxml.Initializable;
 import lombok.Getter;
 import lombok.Setter;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sample.MqttTopic;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -43,26 +40,13 @@ public class MqttGauge extends Gauge implements MqttProperty<Double>, Initializa
         return  (now()-setTime) > disableTimeout;
     }
 
-    @Override
-    public void onSubscribe(Subscription subscription) {
-
-    }
 
     @Override
-    public void onNext(Double d) {
+    public void onNext(Object d) {
         setTime=now();
-       setValue(d);
+       setValue((Double)d);
     }
 
-    @Override
-    public void onError(Throwable throwable) {
-
-    }
-
-    @Override
-    public void onComplete() {
-
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
