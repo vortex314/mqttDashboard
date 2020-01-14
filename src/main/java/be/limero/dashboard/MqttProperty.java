@@ -1,12 +1,18 @@
 package be.limero.dashboard;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public interface MqttProperty<T extends Object>  {
     public static String srcPrefix="src/";
     public static String dstPrefix="dst/";
 
-    void setTopic(String topic);
+    void setSrc(String s);
+    String getSrc();
 
-    String getTopic();
+    void setDst(String s);
+    String getDst();
+
 
     void setDisableTimeout(Integer timeout);
 

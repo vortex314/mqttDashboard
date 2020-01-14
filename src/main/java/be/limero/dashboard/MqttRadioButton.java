@@ -17,10 +17,10 @@ import static be.limero.dashboard.Util.now;
 public class MqttRadioButton extends RadioButton implements MqttProperty<Boolean>, Initializable {
     @Setter
     @Getter
-    String topic;
+    String src;
     @Setter
     @Getter
-    String dstTopic="dst/lost-found/mqttRadioButton";
+    String dst;
     @Setter
     @Getter
     Boolean retained;
@@ -45,10 +45,10 @@ public class MqttRadioButton extends RadioButton implements MqttProperty<Boolean
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        log.info(" initialized topic : " + topic + " disableTimeout " + disableTimeout);
+        log.info(" initialized topic : " + dst + " disableTimeout " + disableTimeout);
         lastUpdated = now();
         this.setOnAction((actionEvent) -> {
-            mqtt.publish(topic, String.valueOf(this.isSelected()));
+            mqtt.publish(dst, String.valueOf(this.isSelected()));
         });
     }
 

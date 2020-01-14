@@ -1,35 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import be.limero.dashboard.MqttAnchorPane?>
+<?import be.limero.dashboard.MqttButton?>
+<?import be.limero.dashboard.MqttChoiceBox?>
 <?import be.limero.dashboard.MqttGauge?>
 <?import be.limero.dashboard.MqttLabel?>
 <?import be.limero.dashboard.MqttRadioButton?>
-<?import javafx.scene.control.Button?>
+<?import java.lang.String?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="188.0" prefWidth="600.0" style="-fx-background-color: \@dark-primary-color;" styleClass="dark-primary-color" stylesheets="@mqtt.css" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.limero.dashboard.Controller">
+<MqttAnchorPane fx:id="anchorPane" connectionUrl="tcp://test.mosquitto.org:1883" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="188.0" prefWidth="600.0" style="-fx-background-color: \@dark-primary-color;" styleClass="dark-primary-color" stylesheets="@mqtt.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.limero.dashboard.Controller">
+    <fx:define>
+        <String fx:id="connectionUrl" fx:value="tcp://test.mosquitto.org:1883" />
+    </fx:define>
     <children>
-        <FlowPane layoutX="14.0" layoutY="14.0" prefHeight="81.0" prefWidth="111.0" vgap="10.0">
+        <MqttGauge disableTimeout="2000" layoutX="125.0" layoutY="7.0" prefHeight="119.0" prefWidth="136.0" skinType="LCD" src="src/drive/motor/rpmTarget" />
+        <MqttLabel layoutX="325.0" layoutY="7.0" prefHeight="28.0" prefWidth="200.0" src="src/ESP82-10027/system/alive" />
+        <VBox layoutX="398.0" prefHeight="145.0" prefWidth="136.0" spacing="1.0">
             <children>
-                <MqttRadioButton mnemonicParsing="false" text="Power" topic="dst/pi3/gpio/29" />
+                <MqttButton disable="true" mnemonicParsing="false" prefHeight="27.0" prefWidth="188.0" src="src/drive/motor/alive" text="POWER" />
+                <MqttButton prefHeight="27.0" prefWidth="168.0" styleClass="dark-primary-color" text="MOTOR" />
+                <MqttButton mnemonicParsing="false" prefHeight="27.0" prefWidth="150.0" text="SERVO" />
+                <MqttButton mnemonicParsing="false" prefHeight="27.0" prefWidth="200.0" text="CUTTER" />
+                <MqttButton mnemonicParsing="false" prefHeight="27.0" prefWidth="271.0" text="RADAR" />
+                <MqttButton disable="true" mnemonicParsing="false" prefHeight="27.0" prefWidth="136.0" text="MOTOR" />
+                <MqttChoiceBox dst="dst/drive/motor/state" value="RUNNING">
+                    <String fx:value="RUNNING" />
+                    <String fx:value="SLEEPING" />
+                    <String fx:value="STOPPED" />
+                </MqttChoiceBox>
+            </children>
+        </VBox>
+        <FlowPane layoutX="14.0" layoutY="14.0" prefHeight="154.0" prefWidth="79.0" vgap="10.0">
+            <children>
+                <MqttRadioButton dst="dst/pi3/gpio/29" mnemonicParsing="false" text="Power" />
                 <CheckBox disable="true" mnemonicParsing="false" text="MOTOR" />
                 <CheckBox mnemonicParsing="false" text="SERVO" />
                 <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <TextField prefHeight="33.0" prefWidth="102.0" />
             </children>
         </FlowPane>
-        <MqttGauge disableTimeout="2000" layoutX="125.0" layoutY="7.0" prefHeight="119.0" prefWidth="136.0" topic="src/drive/motor/rpmTarget" />
-        <MqttLabel layoutX="325.0" layoutY="7.0" prefHeight="28.0" prefWidth="200.0" topic="src/ESP82-10027/system/alive" />
-        <VBox layoutX="398.0" prefHeight="145.0" prefWidth="136.0" spacing="1.0">
-            <children>
-                <Button disable="true" mnemonicParsing="false" prefHeight="27.0" prefWidth="188.0" text="POWER" />
-                <Button prefHeight="27.0" prefWidth="168.0" styleClass="dark-primary-color" text="MOTOR" />
-                <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="150.0" text="SERVO" />
-                <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="200.0" text="CUTTER" />
-                <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="271.0" text="RADAR" />
-                <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="136.0" text="Button" />
-            </children>
-        </VBox>
     </children>
-</AnchorPane>
+</MqttAnchorPane>

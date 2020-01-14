@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 public class MqttChoiceBox extends ChoiceBox<String> implements MqttProperty<String>, Initializable {
     @Setter
     @Getter
-    String topic;
+    String src,dst;
     @Setter @Getter Boolean retained;
     @Setter @Getter Integer qos;
     @Setter @Getter Integer disableTimeout=2000;
@@ -33,7 +33,7 @@ public class MqttChoiceBox extends ChoiceBox<String> implements MqttProperty<Str
         this.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                mqtt.publish(topic,newValue);
+                mqtt.publish(dst,newValue);
             }
         });
     }

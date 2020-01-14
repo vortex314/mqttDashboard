@@ -28,7 +28,7 @@ public class Mqtt implements IMqttMessageListener {
     HashMap<String, MqttProperty<Object>> topicSubscribers = new HashMap<String, MqttProperty<Object>>();
 
     void register(MqttProperty mqttProperty) {
-        topicSubscribers.put(mqttProperty.getTopic(), mqttProperty);
+        topicSubscribers.put(mqttProperty.getSrc(), mqttProperty);
     }
 
     void connect() {

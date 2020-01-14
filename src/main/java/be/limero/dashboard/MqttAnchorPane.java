@@ -9,5 +9,5 @@ public class MqttAnchorPane extends AnchorPane {
     @Getter
     String connectionUrl;
 
-    MqttAnchorPane(){ super();}
+    public MqttAnchorPane(){ super();}
 }

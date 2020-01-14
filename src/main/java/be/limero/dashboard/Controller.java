@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
     public AnchorPane anchorPane;
-    public String url = "tcp://test.mosquitto.org";
+    public String connectionUrl = "tcp://test.mosquitto.org";
 
 
     ValuePublisher<Boolean> mqttIsConnected = new ValuePublisher<Boolean>();
@@ -35,7 +35,7 @@ public class Controller implements Initializable {
                 MqttProperty mqttProperty=(MqttProperty)node;
                 mqttProperty.setMqtt(mqtt);
                 mqtt.register(mqttProperty);
-                log.info(" "+node.getClass()+" : "+mqttProperty.getTopic());
+                log.info(" "+node.getClass()+" : "+mqttProperty.getSrc());
                 if (node instanceof Initializable) ((Initializable) node).initialize(null, null);
             } else if (node instanceof Pane) {
                 scanChildren((Pane) node);

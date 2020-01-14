@@ -18,7 +18,7 @@ import java.util.TimerTask;
 import static be.limero.dashboard.Util.now;
 
 public class MqttLabel extends Label implements MqttProperty<Object>, Initializable {
-    @Setter @Getter String topic;
+    @Setter @Getter String src,dst;
     @Setter @Getter Boolean retained;
     @Setter @Getter Integer qos;
     @Setter @Getter Integer disableTimeout=2000;

@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import java.lang.String?>
 
+<?import be.limero.dashboard.MqttGauge?>
 <AnchorPane fx:id="anchorPane" prefHeight="603.0" prefWidth="742.0" xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.limero.dashboard.Controller">
     <fx:define>
@@ -40,10 +41,10 @@
             <children>
                 <Gauge fx:id="motorRpmTarget" maxValue="120.0" minValue="-120.0" minorTickSpace="5.0" title="rpm target"
                        unit="RPM" id="" userData="src/drive/motor/rpmTarget--SetValue"/>
-                <Gauge fx:id="motorRpmMeasured" maxValue="120.0" minValue="-120.0" minorTickSpace="5.0"
+                <MqttGauge fx:id="motorRpmMeasured" maxValue="120.0" minValue="-120.0" minorTickSpace="5.0"
                        prefHeight="200.0" prefWidth="200.0" title="rpm measured" unit="RPM"
                        userData="src/drive/motor/rpmMeasured--SetValue" GridPane.columnIndex="1"/>
-                <Gauge fx:id="motorCurrent" alert="true" alertMessage="ALERT !!!" averageVisible="true"
+                <MqttGauge fx:id="motorCurrent" alert="true" alertMessage="ALERT !!!" averageVisible="true"
                        averagingEnabled="true" majorTickSpace="1.0" maxValue="5.0" minorTickSpace="0.1"
                        prefHeight="200.0" prefWidth="200.0" title="current" unit="A"
                        userData="src/drive/motor/current--SetValue" GridPane.columnIndex="2"/>
@@ -66,16 +67,16 @@
                         </MqttPane>
                     </children>
                 </VBox>
-                <Gauge fx:id="servoAngleTarget" angleRange="180.0" averageVisible="true" averagingEnabled="true"
+                <MqttGauge fx:id="servoAngleTarget" angleRange="180.0" averageVisible="true" averagingEnabled="true"
                        maxValue="90.0" minMeasuredValue="-45.0" minValue="-90.0" minorTickSpace="5.0" prefHeight="200.0"
                        prefWidth="200.0" startAngle="270.0" threshold="45.0" title="angle target" unit="Degrees"
                        userData="src/drive/servo/angleTarget--SetValue" GridPane.rowIndex="2"/>
-                <Gauge fx:id="servoAngleMeasured" angleRange="180.0" averageVisible="true" averagingEnabled="true"
+                <MqttGauge fx:id="servoAngleMeasured" angleRange="180.0" averageVisible="true" averagingEnabled="true"
                        maxValue="90.0" minValue="-90.0" minorTickSpace="5.0" prefHeight="200.0" prefWidth="200.0"
                        startAngle="270.0" title="angle measured" unit="Degrees"
                        userData="src/drive/servo/angleMeasured--SetValue" GridPane.columnIndex="1"
                        GridPane.rowIndex="2"/>
-                <Gauge fx:id="servoCurrent" alert="true" alertMessage="ALERT !!!" majorTickSpace="1.0" maxValue="5.0"
+                <MqttGauge fx:id="servoCurrent" alert="true" alertMessage="ALERT !!!" majorTickSpace="1.0" maxValue="5.0"
                        minorTickSpace="0.1" prefHeight="200.0" prefWidth="200.0" title="current" unit="A"
                        userData="src/drive/servo/current--SetValue" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
                 <Slider fx:id="rpmTargetSlider" max="120.0" min="-120.0" onMouseReleased="#onMouseReleased"
@@ -94,7 +95,7 @@
                        GridPane.rowIndex="3"/>
                 <MqttPane topic="src/ESP82-10027/system/counter" GridPane.rowIndex="4">
                     <children>
-                        <Gauge prefHeight="191.0" prefWidth="308.0"/>
+                        <MqttGauge prefHeight="191.0" prefWidth="308.0"/>
                     </children>
                 </MqttPane>
             </children>

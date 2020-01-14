@@ -15,7 +15,7 @@ import java.util.TimerTask;
 import static be.limero.dashboard.Util.now;
 
 public class MqttGauge extends Gauge implements MqttProperty<Double>, Initializable {
-    @Setter @Getter String topic;
+    @Setter @Getter String src,dst;
     @Setter @Getter Boolean retained;
     @Setter @Getter Integer qos;
     @Setter @Getter Integer disableTimeout=Integer.MAX_VALUE;
