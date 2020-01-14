@@ -16,7 +16,9 @@ public class Dashboard extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("draft.fxml"));
         primaryStage.setTitle("MQTT Dashboard");
-        primaryStage.setScene(new Scene(root, 700, 300));
+
+        primaryStage.setResizable(true);
+        primaryStage.setScene(new Scene(root, root.prefWidth(-1), root.prefHeight(-1)));
         primaryStage.show();
     }
 }

@@ -7,7 +7,10 @@ import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import org.eclipse.paho.client.mqttv3.*;
+import org.json.JSONStringer;
 import org.json.JSONTokener;
+import org.json.JSONWriter;
+import org.json.simple.JSONValue;
 import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +20,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
-public class Mqtt implements IMqttMessageListener {
+public class Mqtt implements MqttCallback {
     private static final Logger log
             = LoggerFactory.getLogger(Mqtt.class);
 
@@ -40,6 +43,7 @@ public class Mqtt implements IMqttMessageListener {
             mqttConnectOptions.setCleanSession(true);
             mqttConnectOptions.setAutomaticReconnect(true);
             mqttClient = new MqttAsyncClient("tcp://limero.ddns.net:1883", "Paho" + System.nanoTime());
+            mqttClient.setCallback(this);
             mqttClient.connect(mqttConnectOptions, this, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
@@ -67,7 +71,12 @@ public class Mqtt implements IMqttMessageListener {
         }
     }
 
-    void publish(String topic, String message) {
+    void publish(String topic,Object message) {
+        JSONValue.toJSONString(message);
+       mqttPublish( topic,JSONValue.toJSONString(message));
+    }
+
+    void mqttPublish(String topic, String message) {
         try {
             log.info(" PUBLISH " + topic + " : " + message);
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
@@ -107,8 +116,17 @@ public class Mqtt implements IMqttMessageListener {
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
         String message = new String(mqttMessage.getPayload());
         Object json = new JSONTokener(message).nextValue();
-        MqttProperty<?> subscriber = topicSubscribers.get(topic);
-        if (subscriber != null)
-            subscriber.onNext(json);
+        if ( topic.startsWith("src/pi3/")) {
+            MqttProperty<?> subscriber = topicSubscribers.get(topic);
+            if (subscriber != null) {
+                log.info(" received "+json+" on topic "+topic +" for "+subscriber.getClass());
+                subscriber.onNext(json);
+            }
+        }
+    }
+
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
     }
 }
