@@ -1,5 +1,7 @@
 package be.limero.dashboard;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -18,9 +20,8 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
     public AnchorPane anchorPane;
     public String connectionUrl = "tcp://test.mosquitto.org";
+    public SimpleBooleanProperty mqttConnected=new SimpleBooleanProperty();
 
-
-    ValuePublisher<Boolean> mqttIsConnected = new ValuePublisher<Boolean>();
 
     private static final Logger log
             = LoggerFactory.getLogger(Controller.class);
@@ -48,6 +49,7 @@ public class Controller implements Initializable {
         log.info("Controller started " + url + "  " + resourceBundle);
         scanChildren(anchorPane);
         mqtt.connect();
+        mqttConnected.bind(mqtt.mqttConnected);
         Long time = System.currentTimeMillis();
     }
 

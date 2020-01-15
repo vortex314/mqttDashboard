@@ -1,5 +1,7 @@
 package be.limero.dashboard;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -23,12 +25,22 @@ import java.util.ResourceBundle;
 public class Mqtt implements MqttCallback {
     private static final Logger log
             = LoggerFactory.getLogger(Mqtt.class);
+    class SubscriberInfo {
+        public MqttProperty<Object> mqttProperty;
+        public String topic;
+        public Long lastUpdated;
+    };
 
     public ValuePublisher<Boolean> connected = new ValuePublisher<>();
+    public SimpleBooleanProperty mqttConnected=new SimpleBooleanProperty() ;
 
     MqttAsyncClient mqttClient;
     MqttConnectOptions mqttConnectOptions;
     HashMap<String, MqttProperty<Object>> topicSubscribers = new HashMap<String, MqttProperty<Object>>();
+
+    public Mqtt(){
+        mqttConnected.set(false);
+    }
 
     void register(MqttProperty mqttProperty) {
         topicSubscribers.put(mqttProperty.getSrc(), mqttProperty);
@@ -49,6 +61,7 @@ public class Mqtt implements MqttCallback {
                 public void onSuccess(IMqttToken iMqttToken) {
                     subscribe("src/#", 0);
                     connected.set(true);
+                    mqttConnected.set(true);
                     log.info("mqtt connected.");
                 }
 
@@ -56,6 +69,7 @@ public class Mqtt implements MqttCallback {
                 public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
                     log.warn("connection failed. ", throwable);
                     connected.set(false);
+                    mqttConnected.set(false);
                 }
             });
         } catch (Exception ex) {
@@ -109,6 +123,7 @@ public class Mqtt implements MqttCallback {
     // @Override
     public void connectionLost(Throwable throwable) {
         connected.set(false);
+        mqttConnected.set(false);
         log.warn("MQTT connection lost ");
     }
 

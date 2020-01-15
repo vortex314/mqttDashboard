@@ -7,7 +7,7 @@ import lombok.Setter;
 public class MqttAnchorPane extends AnchorPane {
     @Setter
     @Getter
-    String connectionUrl;
+    String connectionUrl,subscriptions;
 
     public MqttAnchorPane(){ super();}
 }
