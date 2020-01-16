@@ -8,6 +8,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import lombok.Getter;
+import lombok.Setter;
 import org.eclipse.paho.client.mqttv3.*;
 import org.json.JSONStringer;
 import org.json.JSONTokener;
@@ -25,6 +27,9 @@ import java.util.ResourceBundle;
 public class Mqtt implements MqttCallback {
     private static final Logger log
             = LoggerFactory.getLogger(Mqtt.class);
+    @Setter
+    @Getter
+    public static Mqtt thisMqtt=null;
     class SubscriberInfo {
         public MqttProperty<Object> mqttProperty;
         public String topic;
@@ -40,6 +45,7 @@ public class Mqtt implements MqttCallback {
 
     public Mqtt(){
         mqttConnected.set(false);
+        thisMqtt=this;
     }
 
     void register(MqttProperty mqttProperty) {
@@ -125,6 +131,7 @@ public class Mqtt implements MqttCallback {
         connected.set(false);
         mqttConnected.set(false);
         log.warn("MQTT connection lost ");
+        connect();
     }
 
     @Override

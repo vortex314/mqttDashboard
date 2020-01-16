@@ -14,10 +14,10 @@ import java.util.Timer;
 
 import static be.limero.dashboard.Util.now;
 
-public class MqttRadioButton extends RadioButton implements MqttProperty<Boolean>, Initializable {
-    @Setter
-    @Getter
-    String src="src/unknown",dst="dst/unknown";
+public class MqttRadioButton extends RadioButton implements MqttProperty<Boolean> {
+    @Setter @Getter String src="src/unknown";
+    @Setter @Getter
+    String dst="dst/unknown";
     @Setter
     @Getter
     Boolean retained;
@@ -40,14 +40,13 @@ public class MqttRadioButton extends RadioButton implements MqttProperty<Boolean
         super();
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void ninitialize(URL url, ResourceBundle resourceBundle) {
         log.info(" initialized topic : " + dst + " disableTimeout " + disableTimeout);
         lastUpdated = now();
         mqtt.register(this);
-        this.setOnAction((actionEvent) -> {
+  /*      this.setOnAction((actionEvent) -> {
             mqtt.publish(dst, this.isSelected());
-        });
+        });*/
     }
 
 

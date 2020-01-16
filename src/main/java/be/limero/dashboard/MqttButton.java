@@ -14,10 +14,10 @@ import java.util.ResourceBundle;
 public class MqttButton extends Button implements MqttProperty<Boolean>, Initializable {
     @Setter
     @Getter
-    String src;
+    String src="src/unknown";
     @Setter
     @Getter
-    String dst;
+    String dst="dst/unknown";
     @Setter
     @Getter
     Boolean retained;

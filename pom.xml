@@ -75,6 +75,18 @@
             <version>1.16.16</version>
             <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>8.40.16</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jfxtras/jfxtras-labs -->
+        <dependency>
+            <groupId>org.jfxtras</groupId>
+            <artifactId>jfxtras-labs</artifactId>
+            <version>9.0-r1</version>
+        </dependency>
 
 
     </dependencies>

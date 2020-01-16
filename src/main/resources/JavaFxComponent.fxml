@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?language javascript?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<fx:root type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml">
+    <fx:script>
+        var myText = "This is the text of my label.";
+    </fx:script>
+    <fx:define>
+        <String fx:id="myText" fx:value="This is the text of my label 1." />
+    </fx:define>
+    <Label text="$myText" />
+    <Label fx:id="myLabel" />
+    <fx:script>
+        myLabel.text = "This is the text of my label 2.";
+    </fx:script>
+</fx:root>

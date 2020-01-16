@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import org.controlsfx.control.ToggleSwitch;
 import org.eclipse.paho.client.mqttv3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,8 @@ public class Controller implements Initializable {
     public String connectionUrl = "tcp://test.mosquitto.org";
     public SimpleBooleanProperty mqttConnected=new SimpleBooleanProperty();
 
+
+    ToggleSwitch ts;
 
     private static final Logger log
             = LoggerFactory.getLogger(Controller.class);
@@ -51,6 +54,10 @@ public class Controller implements Initializable {
         mqtt.connect();
         mqttConnected.bind(mqtt.mqttConnected);
         Long time = System.currentTimeMillis();
+    }
+
+    public void publish(String topic,Object object) {
+        mqtt.publish(topic,object);
     }
 
 }
