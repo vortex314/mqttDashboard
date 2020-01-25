@@ -1,73 +1,100 @@
 package be.limero.dashboard;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.json.JSONStringer;
 import org.json.JSONTokener;
 import org.json.JSONWriter;
 import org.json.simple.JSONValue;
-import org.reactivestreams.Subscriber;
+
+import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rx.Observer;
+
+import scala.collection.mutable.MultiMap;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Mqtt implements MqttCallback {
     private static final Logger log
             = LoggerFactory.getLogger(Mqtt.class);
+    MultiValuedMap<String, PubMsgHandler> mapSubscribers = new ArrayListValuedHashMap<>();
+
     @Setter
     @Getter
-    public static Mqtt thisMqtt=null;
+    public BooleanProperty connected = new SimpleBooleanProperty();
+
+    @Setter
+    @Getter
+    public static Mqtt thisMqtt = null;
+
+    public void onMqtt(String topic, Observer<PubMsg> subscriber) {
+
+    }
+
+
     class SubscriberInfo {
         public MqttProperty<Object> mqttProperty;
         public String topic;
         public Long lastUpdated;
-    };
+    }
 
-    public ValuePublisher<Boolean> connected = new ValuePublisher<>();
-    public SimpleBooleanProperty mqttConnected=new SimpleBooleanProperty() ;
+    ;
+
 
     MqttAsyncClient mqttClient;
     MqttConnectOptions mqttConnectOptions;
     HashMap<String, MqttProperty<Object>> topicSubscribers = new HashMap<String, MqttProperty<Object>>();
 
-    public Mqtt(){
-        mqttConnected.set(false);
-        thisMqtt=this;
+    public Mqtt() {
+        connected.set(false);
+        thisMqtt = this;
+    }
+
+
+    void register(String topic, PubMsgHandler handler) {
+        mapSubscribers.put(topic, handler);
     }
 
     void register(MqttProperty mqttProperty) {
         topicSubscribers.put(mqttProperty.getSrc(), mqttProperty);
     }
 
-    void connect() {
+    public void connect() {
         try {
             log.info("mqtt connecting...");
-     /*       String tmpDir = System.getProperty("java.io.tmpdir");
-            MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence(tmpDir);*/
+            /*       String tmpDir = System.getProperty("java.io.tmpdir");*/
+            MemoryPersistence dataStore = new MemoryPersistence();
             mqttConnectOptions = new MqttConnectOptions();
             mqttConnectOptions.setCleanSession(true);
             mqttConnectOptions.setAutomaticReconnect(true);
-            mqttClient = new MqttAsyncClient("tcp://limero.ddns.net:1883", "Paho" + System.nanoTime());
+            mqttClient = new MqttAsyncClient("tcp://limero.ddns.net:1883", "Paho" + System.nanoTime(), dataStore);
             mqttClient.setCallback(this);
             mqttClient.connect(mqttConnectOptions, this, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
                     subscribe("src/#", 0);
                     connected.set(true);
-                    mqttConnected.set(true);
                     log.info("mqtt connected.");
                 }
 
@@ -75,7 +102,6 @@ public class Mqtt implements MqttCallback {
                 public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
                     log.warn("connection failed. ", throwable);
                     connected.set(false);
-                    mqttConnected.set(false);
                 }
             });
         } catch (Exception ex) {
@@ -85,15 +111,16 @@ public class Mqtt implements MqttCallback {
 
     public void disconnect() {
         try {
+            log.info("disconnect()");
             mqttClient.disconnect();
         } catch (MqttException ex) {
             log.warn("disconnect issue ", ex);
         }
     }
 
-    void publish(String topic,Object message) {
+    void publish(String topic, Object message) {
         JSONValue.toJSONString(message);
-       mqttPublish( topic,JSONValue.toJSONString(message));
+        mqttPublish(topic, JSONValue.toJSONString(message));
     }
 
     void mqttPublish(String topic, String message) {
@@ -126,10 +153,10 @@ public class Mqtt implements MqttCallback {
         }
     }
 
+
     // @Override
     public void connectionLost(Throwable throwable) {
         connected.set(false);
-        mqttConnected.set(false);
         log.warn("MQTT connection lost ");
         connect();
     }
@@ -138,17 +165,26 @@ public class Mqtt implements MqttCallback {
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
         String message = new String(mqttMessage.getPayload());
         Object json = new JSONTokener(message).nextValue();
-        if ( topic.startsWith("src/pi3/")) {
-            MqttProperty<?> subscriber = topicSubscribers.get(topic);
-            if (subscriber != null) {
-                log.info(" received "+json+" on topic "+topic +" for "+subscriber.getClass());
-                subscriber.onNext(json);
-            }
+        if (topic.startsWith("src/")) {
+            Collection<PubMsgHandler> handlerList = mapSubscribers.get(topic);
+            for (PubMsgHandler handler : handlerList) {
+                    handler.onPubMsg(topic, json);
+                }
         }
     }
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
+    }
+
+    public void stop() {
+        try {
+            mqttClient.disconnect();
+            mqttClient.close(true);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
 
     }
 }

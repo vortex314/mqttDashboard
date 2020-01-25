@@ -1,5 +1,6 @@
 package sample;
 
+import be.limero.dashboard.PubMsgHandler;
 import eu.hansolo.medusa.Gauge;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
@@ -11,7 +12,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rx.Observer;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -20,7 +20,7 @@ import java.util.TimerTask;
 
 import static be.limero.dashboard.Util.now;
 
-public class MqttPane extends FlowPane implements Initializable, Observer<MqttMessage> {
+public class MqttPane extends FlowPane implements Initializable, PubMsgHandler {
     String topic;
     Integer disableTimeout = Integer.MAX_VALUE;
     Integer sampleCount = 10;
@@ -116,19 +116,7 @@ public class MqttPane extends FlowPane implements Initializable, Observer<MqttMe
     }
 
     @Override
-    public void onCompleted() {
-        log.warn("onCompleted");
-    }
+    public void onPubMsg(String topic,Object object) {
 
-    @Override
-    public void onError(Throwable throwable) {
-        log.warn("onError", throwable);
-    }
-
-    @Override
-    public void onNext(MqttMessage mqttMessage) {
-        String message = new String(mqttMessage.getPayload());
-        Object json = new JSONTokener(message).nextValue();
-        setChildren(this, json);
     }
 }
