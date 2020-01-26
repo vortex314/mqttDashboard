@@ -159,12 +159,18 @@ public class Controller implements Initializable {
             });
         });
     }
-    static Long startTime=0L;
-    static Long startCounter=0L;
 
-    public void subscribeLineChart(String topic, LineChart lineChart,Integer samples) {
-        if ( startTime==0L ) {
-            startTime=System.currentTimeMillis();
+    class LineChartData {
+         Long startTime = 0L;
+    };
+
+    public void subscribeLineChart(String topic, LineChart lineChart,Integer index,Integer samples) {
+        if (!( lineChart.getUserData() instanceof  LineChartData) ){
+            lineChart.setUserData(new LineChartData());
+        }
+        LineChartData data=(LineChartData)lineChart.getUserData();
+        if ( data.startTime==0L ) {
+            data.startTime=System.currentTimeMillis();
             XYChart.Series series = new XYChart.Series<Number,Number>();
             series.setName(topic);
             lineChart.getData().add(series);
@@ -173,16 +179,20 @@ public class Controller implements Initializable {
         mqtt.register(topic, (t, value) -> {
             log.info(t + " = " + value);
             Platform.runLater(() -> {
-                Number v = (Integer)value;
-                if ( startCounter==0L) startCounter=v.longValue();
-                v =  v.longValue() - startCounter;
-
+                Number v=0;
+                if ( value instanceof  Double ) {
+                    v=(Double)value;
+                } else if ( value instanceof  Integer ) {
+                    v=(Integer)value;
+                } else {
+                    log.warn(" unexpected type for graph : "+value.getClass()+" on topic : "+topic);
+                }
                 ObservableList<XYChart.Series<Number,Number>> chartList = lineChart.getData();
-                XYChart.Series<Number,Number> chart = chartList.get(0);
+                XYChart.Series<Number,Number> chart = chartList.get(index);
                 if ( chart.getData().size()> samples) {
                     chart.getData().remove(0,1);
                 }
-                chart.getData().add(new XYChart.Data(System.currentTimeMillis()-startTime, v));
+                chart.getData().add(new XYChart.Data(System.currentTimeMillis()-data.startTime, v));
             });
         });
     }
