@@ -44,13 +44,8 @@ public class Mqtt implements MqttCallback {
     @Getter
     public BooleanProperty connected = new SimpleBooleanProperty();
 
-    @Setter
-    @Getter
-    public static Mqtt thisMqtt = null;
+    @Setter@Getter private String url="tcp://test.mosquitto.org";
 
-    public void onMqtt(String topic, Observer<PubMsg> subscriber) {
-
-    }
 
 
     class SubscriberInfo {
@@ -68,7 +63,6 @@ public class Mqtt implements MqttCallback {
 
     public Mqtt() {
         connected.set(false);
-        thisMqtt = this;
     }
 
 
@@ -88,7 +82,7 @@ public class Mqtt implements MqttCallback {
             mqttConnectOptions = new MqttConnectOptions();
             mqttConnectOptions.setCleanSession(true);
             mqttConnectOptions.setAutomaticReconnect(true);
-            mqttClient = new MqttAsyncClient("tcp://limero.ddns.net:1883", "Paho" + System.nanoTime(), dataStore);
+            mqttClient = new MqttAsyncClient(url, "mqttDashboard" + System.nanoTime(), dataStore);
             mqttClient.setCallback(this);
             mqttClient.connect(mqttConnectOptions, this, new IMqttActionListener() {
                 @Override

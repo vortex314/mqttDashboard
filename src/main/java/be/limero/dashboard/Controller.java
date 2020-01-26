@@ -12,11 +12,14 @@ import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -41,15 +44,12 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
     public AnchorPane anchorPane;
-    public String connectionUrl = "tcp://test.mosquitto.org";
-    @FXML
-    public BooleanProperty mqttConnected = new SimpleBooleanProperty();
+    public FlowPane flowPane;
     @FXML
     public Boolean on = true;
     @FXML
     public Mqtt mqtt = new Mqtt();
-    @FXML
-    public Label motorMessage;
+
 
     private final ObjectProperty<String> selectedClient = new SimpleObjectProperty<>("start String");
 
@@ -111,7 +111,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         log.info("Controller started " + url + "  " + resourceBundle);
-        scanChildren(anchorPane);
+//        scanChildren(anchorPane);
 /*        Window stage =  anchorPane.getScene().getWindow();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
@@ -120,8 +120,7 @@ public class Controller implements Initializable {
                 mqtt.stop();
             }
         });*/
-        mqtt.connect();
-        mqttConnected.bind(mqtt.connected);
+    //    mqtt.connect();
         mqtt.register("src/ESP82-10027/system/alive", (topic, object) -> {
             log.info(topic + " = " + object);
             Platform.runLater(() -> {
@@ -157,6 +156,33 @@ public class Controller implements Initializable {
                 // call func with args of object and value func(control,value)
                 ScriptObjectMirror so=(ScriptObjectMirror)func;
                 so.call(null,control,value);
+            });
+        });
+    }
+    static Long startTime=0L;
+    static Long startCounter=0L;
+
+    public void subscribeLineChart(String topic, LineChart lineChart,Integer samples) {
+        if ( startTime==0L ) {
+            startTime=System.currentTimeMillis();
+            XYChart.Series series = new XYChart.Series<Number,Number>();
+            series.setName(topic);
+            lineChart.getData().add(series);
+            lineChart.setUserData(topic);
+        }
+        mqtt.register(topic, (t, value) -> {
+            log.info(t + " = " + value);
+            Platform.runLater(() -> {
+                Number v = (Integer)value;
+                if ( startCounter==0L) startCounter=v.longValue();
+                v =  v.longValue() - startCounter;
+
+                ObservableList<XYChart.Series<Number,Number>> chartList = lineChart.getData();
+                XYChart.Series<Number,Number> chart = chartList.get(0);
+                if ( chart.getData().size()> samples) {
+                    chart.getData().remove(0,1);
+                }
+                chart.getData().add(new XYChart.Data(System.currentTimeMillis()-startTime, v));
             });
         });
     }
