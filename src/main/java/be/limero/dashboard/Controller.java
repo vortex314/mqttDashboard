@@ -1,14 +1,11 @@
 package be.limero.dashboard;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -17,28 +14,14 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import lombok.Getter;
-import lombok.Setter;
-import org.controlsfx.control.ToggleSwitch;
-import org.eclipse.paho.client.mqttv3.*;
-import org.reactivestreams.Processor;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.font.Script;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 
 
@@ -69,7 +52,7 @@ public class Controller implements Initializable {
     private static final Logger log
             = LoggerFactory.getLogger(Controller.class);
 
-    HashMap<String, Observer<MqttMessage>> topicObserver = new HashMap<String, Observer<MqttMessage>>();
+ //   HashMap<String, Observer<MqttMessage>> topicObserver = new HashMap<String, Observer<MqttMessage>>();
 
 
     void onButton(Button button) {
@@ -93,7 +76,7 @@ public class Controller implements Initializable {
 
     public void onMqtt(String topic, Object object, String action) {
         log.info(" attach " + topic + " to " + object.toString() + " with " + action);
-        if (object instanceof Label && action == "setText") {
+        if (object instanceof Label && action.equals("setText")) {
             mqtt.register(topic, (String tpc, Object obj) -> {
                 ((Label) object).setText(obj.toString());
             });
@@ -197,8 +180,12 @@ public class Controller implements Initializable {
         });
     }
 
-    public void onToggle(MouseEvent actionEvent) {
-        log.info("toggle " + actionEvent.getSource());
+    public void toggleConnect(Boolean b) {
+        if ( mqtt.connected.get() ) {
+            mqtt.connect();
+        } else {
+            mqtt.disconnect();
+        }
     }
 
     @FXML
@@ -208,10 +195,4 @@ public class Controller implements Initializable {
             log.info("event " + event);
         }
     };
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        mqtt.stop();
-    }
 }

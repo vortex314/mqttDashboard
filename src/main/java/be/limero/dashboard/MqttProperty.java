@@ -1,7 +1,6 @@
 package be.limero.dashboard;
 
-import lombok.Getter;
-import lombok.Setter;
+
 
 public interface MqttProperty<T extends Object> {
     public static String srcPrefix = "src/";

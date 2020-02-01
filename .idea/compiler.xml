@@ -17,11 +17,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="javafx" />
         <module name="mqttDashboard" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="9">
-      <module name="mqttDashboard" target="8" />
+      <module name="dashboard" target="11" />
+      <module name="java11" target="11" />
+      <module name="javafx" target="11" />
+      <module name="mqttDashboard" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

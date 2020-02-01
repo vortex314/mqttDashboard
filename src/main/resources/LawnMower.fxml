@@ -3,41 +3,46 @@
 <?language javascript?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import org.controlsfx.control.ToggleSwitch?>
 <?import java.lang.Boolean?>
+<?import jfxtras.labs.scene.control.gauge.Gauge?>
+<?import eu.hansolo.medusa.FGauge?>
 <FlowPane xmlns:fx="http://javafx.com/fxml/1" fx:id="flowPane" prefHeight="400.0" prefWidth="624.0"
           xmlns="http://javafx.com/javafx/8.0.191" fx:controller="be.limero.dashboard.Controller">
     <fx:script>
         var mqtt=controller.mqtt
 
-        function publish(topic,msg) {
-        controller.publish(topic,JSON.stringify(msg));
+        function publish(topic,msg) { controller.publish(topic,JSON.stringify(msg)); }
+        function log(o) { print("LOG >> "+JSON.stringify(o)); }
+        function setText(control,value) { control.text=value }
+        function setDisable(control,value) { control.disabled=value }
+        function setSelected(control,value) {
+        if ( typeof(value)==='boolean' ) { control.selected=value }
+        else if ( typeof(value)==='number') { control.selected=0?false:true }
         }
 
-        function log(o) {
-        print("LOG >> "+JSON.stringify(o));
+        function setTextFill(control,bool) {
+        if ( bool ) {
+        control.textFill=javafx.scene.paint.Color.LIGHTGREEN
+        control.style="-fx-background-color: lightgreen;"
+        }
+        else {
+        control.textFill=javafx.scene.paint.Color.LIGHTRED
+        powerSwitch.disable=false
+        }
         }
 
-        function setControlText(control,value) {
-        control.text=value
+        function powerOn(control,bool){
+        publish('dst/pi3/gpio21/mode','OUTPUT')
+        if ( bool ) {
+        publish('dst/pi3/gpio21/value',bool?1:0)
+        } else {
+        publish('dst/pi3/gpio21/value',bool?1:0)
         }
-
-        function setControlDisable(control,value) {
-        control.disabled=value
-        }
-
-        function powerOn(bool){
-            publish('dst/pi3/gpio21/mode','OUTPUT')
-            if ( bool ) {
-                publish('dst/pi3/gpio21/value',bool?1:0)
-            } else {
-               publish('dst/pi3/gpio21/value',bool?1:0)
-            }
         }
 
 
@@ -45,8 +50,6 @@
     <fx:define>
         <Boolean fx:id="on" fx:value="false"/>
     </fx:define>
-    <fx:script>
-    </fx:script>
     <children>
         <ToggleSwitch fx:id="mqttSwitch"
                       onMouseClicked="if (mqttSwitch.selected) { mqtt.url = mqttUrl.text; mqtt.connect() } else mqtt.disconnect()"
@@ -55,11 +58,11 @@
         <TextField fx:id="mqttUrl" prefWidth="200" text="tcp://limero.ddns.net:1883"/>
         <ToggleSwitch fx:id="powerSwitch"
                       onMouseClicked="powerOn(powerSwitch.selected)"
-                      prefHeight="20" text="Power" textAlignment="CENTER"/>
+                      prefHeight="20" text="Power" textAlignment="CENTER" textFill="black"/>
         <HBox prefHeight="15.0" prefWidth="592.0">
             <children>
-
-                <Label alignment="CENTER" prefHeight="27.0" prefWidth="58.0" text="Motor"/>
+                <Label fx:id="motorLabel" alignment="CENTER" prefHeight="27.0" prefWidth="58.0" text="Motor"
+                       textFill="blue"/>
                 <Button fx:id="motorStartButton" onAction="publish('dst/drive/motor/running',true)"
                         style="-fx-graphic: url('start.png')"/>
                 <Button fx:id="motorStopButton" onAction="publish('dst/drive/motor/running',false)"
@@ -67,7 +70,6 @@
                 <Button fx:id="motorPauseButton" onAction="publish('dst/drive/motor/state','PAUSE')"
                         style="-fx-graphic: url('pause.png')"/>
                 <Label fx:id="motorMessage" prefHeight="27.0" prefWidth="315.0" text="motor message.."/>
-
             </children>
             <padding>
                 <Insets right="8.0"/>
@@ -79,7 +81,6 @@
                    text="motor message.."/>
         </FlowPane>
 
-
         <LineChart fx:id="motorRpm" title="RPM Motor" animated="false" createSymbols="false">
             <xAxis>
                 <NumberAxis side="BOTTOM" autoRanging="true" forceZeroInRange="false"/>
@@ -88,6 +89,7 @@
                 <NumberAxis side="LEFT" autoRanging="true" forceZeroInRange="false"/>
             </yAxis>
         </LineChart>
+        <FGauge fx:id="motorRpmHauge" />
 
         <LineChart fx:id="espCounter" title="ESP82 counter" animated="false" createSymbols="false" prefHeight="200">
             <xAxis>
@@ -100,13 +102,15 @@
         <fx:script>
             mqtt.url = mqttUrl.text
             mqtt.connect()
-            controller.subscribe('src/drive/motor/message',motorMessage,setControlText);
-            controller.subscribe('src/drive/motor/isrCounter',isrCounter,setControlText);
-            controller.subscribeExpired('src/ESP82-10027/system/alive',powerSwitch,setControlDisable);
-            controller.subscribeLineChart('src/drive/motor/rpmMeasured',motorRpm,0,1000)
-            controller.subscribeLineChart('src/drive/motor/rpmTarget',motorRpm,1,1000)
-            controller.subscribeLineChart('src/drive/motor/pwm',motorRpm,2,1000)
-            // controller.subscribeLineChart('src/ESP82-10027/system/counter',espCounter,0,1000)
+            controller.subscribe('src/drive/motor/message',motorMessage,setText);
+            controller.subscribe('src/drive/motor/isrCounter',isrCounter,setText);
+            controller.subscribe('src/pi3/gpio21/value',powerSwitch,setSelected);
+            controller.subscribeExpired('src/ESP82-10027/system/alive',powerSwitch,setDisable);
+            controller.subscribeLineChart('src/drive/motor/rpmMeasured',motorRpm,0,1000);
+            controller.subscribeLineChart('src/drive/motor/rpmTarget',motorRpm,1,1000);
+            controller.subscribeLineChart('src/drive/motor/pwm',motorRpm,2,1000);
+            controller.subscribe('src/ESP82-10027/system/alive',powerSwitch,setTextFill);
+            // controller.subscribeLineChart('src/ESP82-10027/system/counter',espCounter,0,1000);
         </fx:script>
     </children>
 </FlowPane>

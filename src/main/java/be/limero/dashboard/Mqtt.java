@@ -1,61 +1,33 @@
 package be.limero.dashboard;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.commons.collections4.MultiSet;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.map.MultiValueMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.json.JSONStringer;
 import org.json.JSONTokener;
-import org.json.JSONWriter;
 import org.json.simple.JSONValue;
-
-import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import scala.collection.mutable.MultiMap;
-
-import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ResourceBundle;
 
 public class Mqtt implements MqttCallback {
     private static final Logger log
             = LoggerFactory.getLogger(Mqtt.class);
     MultiValuedMap<String, PubMsgHandler> mapSubscribers = new ArrayListValuedHashMap<>();
 
-    @Setter
-    @Getter
     public BooleanProperty connected = new SimpleBooleanProperty();
 
-    @Setter@Getter private String url="tcp://test.mosquitto.org";
-
-
+    private String url = "tcp://test.mosquitto.org";
 
     class SubscriberInfo {
         public MqttProperty<Object> mqttProperty;
         public String topic;
         public Long lastUpdated;
     }
-
-    ;
-
 
     MqttAsyncClient mqttClient;
     MqttConnectOptions mqttConnectOptions;
@@ -67,11 +39,19 @@ public class Mqtt implements MqttCallback {
 
 
     void register(String topic, PubMsgHandler handler) {
+        if (connected.get()) subscribe(topic, 0);
         mapSubscribers.put(topic, handler);
     }
 
     void register(MqttProperty mqttProperty) {
         topicSubscribers.put(mqttProperty.getSrc(), mqttProperty);
+    }
+
+    void subscribeRegistered() {
+        MultiSet<String> topics = mapSubscribers.keys();
+        for (String topic : topics) {
+            subscribe(topic, 0);
+        }
     }
 
     public void connect() {
@@ -87,9 +67,10 @@ public class Mqtt implements MqttCallback {
             mqttClient.connect(mqttConnectOptions, this, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    subscribe("src/#", 0);
+                    //                   subscribe("src/#", 0);
                     connected.set(true);
                     log.info("mqtt connected.");
+                    subscribeRegistered();
                 }
 
                 @Override
@@ -134,7 +115,7 @@ public class Mqtt implements MqttCallback {
             mqttClient.subscribe(topic, qos, this, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken iMqttToken) {
-                    log.info("subscribed.");
+                    log.info("subscribed " + topic);
                 }
 
                 @Override
@@ -162,8 +143,8 @@ public class Mqtt implements MqttCallback {
         if (topic.startsWith("src/")) {
             Collection<PubMsgHandler> handlerList = mapSubscribers.get(topic);
             for (PubMsgHandler handler : handlerList) {
-                    handler.onPubMsg(topic, json);
-                }
+                handler.onPubMsg(topic, json);
+            }
         }
     }
 
@@ -180,5 +161,25 @@ public class Mqtt implements MqttCallback {
             e.printStackTrace();
         }
 
+    }
+
+    public boolean isConnected() {
+        return connected.get();
+    }
+
+    public BooleanProperty connectedProperty() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected.set(connected);
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
