@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?language javascript?>
+
+<?import com.gluonhq.charm.glisten.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.ToggleSwitch?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="605.0"
+            prefWidth="710.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+fx:controller="be.limero.dashboard.Controller">
+    <fx:script xmlns:fx="http://www.w3.org/1999/xhtml">
+        var mqtt=controller.mqtt
+
+        function publish(topic,msg) { controller.publish(topic,JSON.stringify(msg)); }
+        function log(o) { print("LOG >> "+JSON.stringify(o)); }
+        function setText(control,value) { control.text=value }
+        function setDisable(control,value) { control.disabled=value }
+        function setSelected(control,value) {
+        if ( typeof(value)==='boolean' ) { control.selected=value }
+        else if ( typeof(value)==='number') { control.selected=0?false:true }
+        }
+
+        function setTextFill(control,bool) {
+        if ( bool ) {
+        control.textFill=javafx.scene.paint.Color.LIGHTGREEN
+        control.style="-fx-background-color: lightgreen;"
+        }
+        else {
+        control.textFill=javafx.scene.paint.Color.LIGHTRED
+        powerSwitch.disable=false
+        }
+        }
+
+        function powerOn(control,bool){
+        publish('dst/pi3/gpio21/mode','OUTPUT')
+        if ( bool ) {
+        publish('dst/pi3/gpio21/value',bool?1:0)
+        } else {
+        publish('dst/pi3/gpio21/value',bool?1:0)
+        }
+        }
+    </fx:script>
+    <children>
+        <HBox layoutX="14.0" layoutY="14.0" prefHeight="28.0" prefWidth="674.0" spacing="10.0">
+            <children>
+                <ToggleSwitch fx:id="mqttSwitch" prefHeight="28.0" prefWidth="80.0" text="MQTT"
+                              onMouseClicked="print('clicked');if (mqttSwitch.selected) { mqtt.url = mqttUrl.text; mqtt.connect() } else mqtt.disconnect()"/>
+                <ToggleSwitch fx:id="powerSwitch" prefHeight="28.0" prefWidth="81.0" text="Power"/>
+                <TextField fx:id="mqttUrl" prefHeight="27.0" prefWidth="251.0" text="tcp://limero.ddns.net:1883"/>
+            </children>
+        </HBox>
+        <HBox layoutX="14.0" layoutY="42.0" prefHeight="28.0" prefWidth="674.0" spacing="5.0">
+            <children>
+                <Label prefHeight="49.0" prefWidth="77.0" text="MOTOR"/>
+                <ToggleButtonGroup prefHeight="12.0" prefWidth="114.0" selectionType="SINGLE">
+                    <toggles>
+                        <ToggleButton fx:id="motorStartButton" onAction="publish('dst/drive/motor/running',true)"
+                                      style="-fx-graphic: url('start.png')">
+                            <graphic>
+                                <Icon content="STOP"/>
+                            </graphic>
+                        </ToggleButton>
+                        <ToggleButton fx:id="motorStopButton" onAction="publish('dst/drive/motor/running',false)"
+                                      style="-fx-graphic: url('stop.png')" selected="true">
+                            <graphic>
+                                <Icon content="PLAY_ARROW"/>
+                            </graphic>
+                        </ToggleButton>
+                        <ToggleButton fx:id="motorPauseButton" onAction="publish('dst/drive/motor/state','PAUSE')"
+                                      style="-fx-graphic: url('pause.png')">
+                            <graphic>
+                                <Icon content="PAUSE"/>
+                            </graphic>
+                        </ToggleButton>
+                    </toggles>
+                </ToggleButtonGroup>
+                <Label fx:id="motorMessage" prefHeight="54.0" prefWidth="482.0" text="Label"/>
+            </children>
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
+        </HBox>
+        <HBox layoutX="14.0" layoutY="84.0" prefHeight="28.0" prefWidth="674.0" spacing="5.0">
+            <children>
+                <Label prefHeight="49.0" prefWidth="77.0" text="STEER"/>
+                <ToggleButtonGroup prefHeight="12.0" prefWidth="114.0" selectionType="SINGLE">
+                    <toggles>
+                       <ToggleButton fx:id="steerStartButton" onAction="publish('dst/drive/steer/running',true)"
+                                     style="-fx-graphic: url('start.png')">
+                          <graphic>
+                             <Icon content="STOP"/>
+                          </graphic>
+                       </ToggleButton>
+                       <ToggleButton fx:id="steerStopButton" onAction="publish('dst/drive/steer/running',false)"
+                                     style="-fx-graphic: url('stop.png')" selected="true">
+                          <graphic>
+                             <Icon content="PLAY_ARROW"/>
+                          </graphic>
+                       </ToggleButton>
+                       <ToggleButton fx:id="steerPauseButton" onAction="publish('dst/drive/steer/state','PAUSE')"
+                                     style="-fx-graphic: url('pause.png')">
+                          <graphic>
+                             <Icon content="PAUSE"/>
+                          </graphic>
+                       </ToggleButton>
+                    </toggles>
+                </ToggleButtonGroup>
+                <Label prefHeight="54.0" prefWidth="482.0" text="Label"/>
+            </children>
+        </HBox>
+        <HBox layoutX="14.0" layoutY="126.0" prefHeight="28.0" prefWidth="674.0" spacing="5.0">
+            <children>
+                <Label prefHeight="49.0" prefWidth="77.0" text="CUTTER"/>
+                <ToggleButtonGroup prefHeight="12.0" prefWidth="114.0" selectionType="SINGLE">
+                    <toggles>
+                       <ToggleButton fx:id="cutterStartButton" onAction="publish('dst/drive/cutter/running',true)"
+                                     style="-fx-graphic: url('start.png')">
+                          <graphic>
+                             <Icon content="STOP"/>
+                          </graphic>
+                       </ToggleButton>
+                       <ToggleButton fx:id="cutterStopButton" onAction="publish('dst/drive/cutter/running',false)"
+                                     style="-fx-graphic: url('stop.png')" selected="true">
+                          <graphic>
+                             <Icon content="PLAY_ARROW"/>
+                          </graphic>
+                       </ToggleButton>
+                       <ToggleButton fx:id="cutterPauseButton" onAction="publish('dst/drive/cutter/state','PAUSE')"
+                                     style="-fx-graphic: url('pause.png')">
+                          <graphic>
+                             <Icon content="PAUSE"/>
+                          </graphic>
+                       </ToggleButton>
+                    </toggles>
+                </ToggleButtonGroup>
+                <Label prefHeight="42.0" prefWidth="484.0" text="Label"/>
+            </children>
+        </HBox>
+        <HBox layoutX="14.0" layoutY="168.0" prefHeight="231.0" prefWidth="692.0">
+            <children>
+                <LineChart fx:id="motorChart" prefHeight="204.0" prefWidth="261.0" title="Motor RPM">
+                    <xAxis>
+                        <CategoryAxis side="BOTTOM"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis side="LEFT"/>
+                    </yAxis>
+                </LineChart>
+                <LineChart prefHeight="204.0" prefWidth="261.0" title="Steer Angle">
+                    <xAxis>
+                        <CategoryAxis side="BOTTOM"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis side="LEFT"/>
+                    </yAxis>
+                </LineChart>
+                <LineChart prefHeight="204.0" prefWidth="261.0" title="Cutter RPM">
+                    <xAxis>
+                        <CategoryAxis side="BOTTOM"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis side="LEFT"/>
+                    </yAxis>
+                </LineChart>
+            </children>
+        </HBox>
+        <HBox layoutX="14.0" layoutY="399.0" prefHeight="202.0" prefWidth="692.0"/>
+    </children>
+    <fx:script>
+        mqtt.url = mqttUrl.text
+        mqtt.connect()
+        controller.subscribe('src/drive/motor/message',motorMessage,setText);
+        controller.subscribe('src/pi3/gpio21/value',powerSwitch,setSelected);
+        controller.subscribeExpired('src/ESP82-10027/system/alive',powerSwitch,setDisable);
+        controller.subscribeLineChart('src/drive/motor/rpmMeasured',motorRpm,0,1000);
+        controller.subscribeLineChart('src/drive/motor/rpmTarget',motorRpm,1,1000);
+        //controller.subscribeLineChart('src/drive/motor/pwm',motorRpm,2,1000);
+        controller.subscribe('src/ESP82-10027/system/alive',powerSwitch,setTextFill);
+        // controller.subscribeLineChart('src/ESP82-10027/system/counter',espCounter,0,1000);
+    </fx:script>
+</AnchorPane>

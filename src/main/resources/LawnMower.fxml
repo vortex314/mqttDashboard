@@ -16,6 +16,8 @@
     <fx:script>
         var mqtt=controller.mqtt
 
+        print('script started')
+
         function publish(topic,msg) { controller.publish(topic,JSON.stringify(msg)); }
         function log(o) { print("LOG >> "+JSON.stringify(o)); }
         function setText(control,value) { control.text=value }
