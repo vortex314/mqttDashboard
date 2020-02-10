@@ -44,16 +44,7 @@
     <orderEntry type="library" name="Maven: org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20190722" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:13.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:mac:13.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:13.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:mac:13.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:13.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:mac:13.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:13.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:mac:13.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.ow2.asm:asm:6.2" level="project" />
-    <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.10" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams-examples:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams-tck:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
@@ -69,5 +60,9 @@
     <orderEntry type="library" name="Maven: org.sonatype.sisu:sisu-inject-plexus:1.4.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.testng:testng:5.14.10" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.6" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="org.controlsfx:controlsfx:11.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.gluonhq:charm-glisten:6.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jfxtras:jfxtras-icalendaragenda:9.0-r1" level="project" />
   </component>
 </module>

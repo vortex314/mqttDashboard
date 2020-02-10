@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/javafx.iml" filepath="$PROJECT_DIR$/javafx.iml" />
       <module fileurl="file://$PROJECT_DIR$/mqttDashboard.iml" filepath="$PROJECT_DIR$/mqttDashboard.iml" />
     </modules>
   </component>
